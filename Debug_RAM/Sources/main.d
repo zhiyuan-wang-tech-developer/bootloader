@@ -61,7 +61,10 @@ Sources/main.o: ../Sources/main.c \
  C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/stdio_api.h \
  C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/stdarg.h \
  C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/cstdarg \
- C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/arm/stdarg.ARM.h
+ C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/arm/stdarg.ARM.h \
+ C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/string.h \
+ C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/cstring \
+ C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/string_api.h
 
 C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/lib_c99.prefix:
 
@@ -188,3 +191,9 @@ C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/stdarg.h:
 C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/cstdarg:
 
 C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/arm/stdarg.ARM.h:
+
+C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/string.h:
+
+C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/cstring:
+
+C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/string_api.h:

@@ -45,7 +45,7 @@
       <File Name="Generated_Code/Cpu.c" FileDate="2018-10-22, 13:45:35" FileAge="1540208735889" FileType="45637" CompNumb="6" />
       <File Name="SDK/platform/drivers/inc/pins_driver.h" FileDate="2018-10-22, 13:39:30" FileAge="1540208370926" FileType="1048576" CompNumb="9" />
       <File Name="SDK/platform/drivers/src/clock/S32K1xx/smc_hw_access.h" FileDate="2018-10-22, 13:39:30" FileAge="1540208370957" FileType="1048576" CompNumb="10" />
-      <File Name="Sources/main.c" FileDate="2018-10-23, 15:11:48" FileAge="1540300308854" FileType="128" />
+      <File Name="Sources/main.c" FileDate="2018-10-24, 14:52:03" FileAge="1540385523122" FileType="128" />
       <File Name="Generated_Code/dmaController1.h" FileDate="2018-10-22, 13:45:35" FileAge="1540208735858" FileType="45637" CompNumb="29" />
       <File Name="SDK/platform/drivers/src/lpuart/lpuart_hw_access.h" FileDate="2018-10-22, 13:45:35" FileAge="1540208735764" FileType="1048576" CompNumb="28" />
       <File Name="Generated_Code/dmaController1.c" FileDate="2018-10-22, 13:45:35" FileAge="1540208735858" FileType="45637" CompNumb="29" />
@@ -83,8 +83,8 @@
       <File Name="SDK/platform/drivers/inc/lpspi_shared_function.h" FileDate="2018-10-22, 13:45:35" FileAge="1540208735811" FileType="1048576" CompNumb="0" />
       <File Name="SDK/platform/drivers/src/pins/pins_port_hw_access.c" FileDate="2018-10-22, 13:39:30" FileAge="1540208370926" FileType="1048576" CompNumb="9" />
       <File Name="Generated_Code/lpspi2_dac.h" FileDate="2018-10-22, 13:45:35" FileAge="1540208735842" FileType="45637" CompNumb="33" />
-      <File Name="SDK/platform/drivers/src/lptmr/lptmr_driver.c" FileDate="2018-10-22, 13:45:35" FileAge="1540208735717" FileType="1048576" CompNumb="14" />
       <File Name="SDK/platform/drivers/src/clock/S32K1xx/pmc_hw_access.h" FileDate="2018-10-22, 13:39:30" FileAge="1540208370957" FileType="1048576" CompNumb="10" />
+      <File Name="SDK/platform/drivers/src/lptmr/lptmr_driver.c" FileDate="2018-10-22, 13:45:35" FileAge="1540208735717" FileType="1048576" CompNumb="14" />
       <File Name="SDK/platform/drivers/src/lpspi/lpspi_hw_access.c" FileDate="2018-10-22, 13:45:35" FileAge="1540208735796" FileType="1048576" CompNumb="0" />
       <File Name="SDK/platform/devices/startup.c" FileDate="2018-10-22, 13:39:30" FileAge="1540208370989" FileType="1048576" CompNumb="6" />
       <File Name="Generated_Code/lpspi0_adc.h" FileDate="2018-10-22, 13:45:35" FileAge="1540208735842" FileType="45637" CompNumb="32" />
@@ -105,5 +105,5 @@
       <File Name="Generated_Code/lpit1.c" FileDate="2018-10-22, 13:45:35" FileAge="1540208735858" FileType="45637" CompNumb="15" />
     </GeneratedByPE>
   </GeneratedFilesList>
-  <CodeGenReference>5</CodeGenReference>
+  <CodeGenReference>7</CodeGenReference>
 </CodeGenerationInfo>
