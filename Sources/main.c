@@ -49,6 +49,14 @@ void eeprom_test(void);
 void handle_uart_rx_data(void *driverState, uart_event_t event, void *userData);
 void uart_rx_test(void);
 void uart_rx_handler_test(void);
+
+
+
+void LPUART0_RxTx_IRQHandler(void)
+{
+	uint8_t rxByte = 0;
+//	LPUART0->STAT & ;
+}
 /*!
   \brief The main function for the project.
   \details The startup initialization sequence is the following:
@@ -98,7 +106,7 @@ int main(void)
     INT_SYS_SetPriority(LPUART0_RxTx_IRQn, 4);
     uint8_t lpuart0_isr_priority = 0;
     lpuart0_isr_priority = INT_SYS_GetPriority(LPUART0_RxTx_IRQn);
-    INT_SYS_InstallHandler(LPUART0_RxTx_IRQn, uart_rx_handler_test, NULL);
+//    INT_SYS_InstallHandler(LPUART0_RxTx_IRQn, uart_rx_handler_test, NULL);
 INT_SYS_EnableIRQ(LPUART0_RxTx_IRQn);
     for(;;)
     {
