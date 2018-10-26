@@ -25,6 +25,7 @@
 
 /* Including necessary module. Cpu.h contains other modules needed for compiling.*/
 #include "Cpu.h"
+#include "pc_communication.h"
 #include "stdio.h"
 #include "string.h"
 
@@ -47,16 +48,7 @@ void program_flash_test(void);
 void eeprom_test(void);
 
 void handle_uart_rx_data(void *driverState, uart_event_t event, void *userData);
-void uart_rx_test(void);
-void uart_rx_handler_test(void);
 
-
-
-void LPUART0_RxTx_IRQHandler(void)
-{
-	uint8_t rxByte = 0;
-//	LPUART0->STAT & ;
-}
 /*!
   \brief The main function for the project.
   \details The startup initialization sequence is the following:
@@ -87,10 +79,11 @@ int main(void)
     	return exit_code;
     }
 
-    LPUART_DRV_Init(INST_LPUART0, &lpuart0_State, &lpuart0_InitConfig0);
+    PC2UART_communication_init();
+
 //    LPUART_DRV_InstallRxCallback(INST_LPUART0, handle_uart_rx_data, NULL);
 
-    LPUART_DRV_SendDataPolling(INST_LPUART0, test_text, sizeof(test_text));
+//    LPUART_DRV_SendDataPolling(INST_LPUART0, test_text, sizeof(test_text));
 
     flash_test_init();
 
@@ -102,15 +95,11 @@ int main(void)
 //    eeprom_test();
 
 //    SystemSoftwareReset();
-    INT_SYS_ClearPending(LPUART0_RxTx_IRQn);
-    INT_SYS_SetPriority(LPUART0_RxTx_IRQn, 4);
-    uint8_t lpuart0_isr_priority = 0;
-    lpuart0_isr_priority = INT_SYS_GetPriority(LPUART0_RxTx_IRQn);
-//    INT_SYS_InstallHandler(LPUART0_RxTx_IRQn, uart_rx_handler_test, NULL);
-INT_SYS_EnableIRQ(LPUART0_RxTx_IRQn);
+
+
     for(;;)
     {
-//    	uart_rx_test();
+    	PC2UART_receiver_run();
 //    	uart_bluetooth_test();
     }
 
@@ -137,7 +126,6 @@ void uart_bluetooth_test(void)
 	static uint8_t rxData = 0;
 	uint32_t bytesReceived = 0;
 	uint32_t bytesTransmitted = 0;
-//  LPUART_DRV_SendDataPolling(INST_LPUART0, test_text, sizeof(test_text));
 //	LPUART_DRV_ReceiveDataPolling(INST_LPUART0, &rxData, 1);
 	uart_status = LPUART_DRV_ReceiveData(INST_LPUART0, &rxData, 1);
 	while( STATUS_BUSY == LPUART_DRV_GetReceiveStatus(INST_LPUART0, &bytesReceived) );
@@ -245,36 +233,16 @@ void eeprom_test(void)
     }
 }
 
-void uart_rx_test(void)
-{
-	LPUART_DRV_ReceiveData(INST_LPUART0, uart_rx_buffer, 15);
-	while( STATUS_BUSY == LPUART_DRV_GetReceiveStatus(INST_LPUART0, NULL) );
-}
 
 void handle_uart_rx_data(void *driverState, uart_event_t event, void *userData)
 {
-	status_t uart_status = 0;
-	uint_fast8_t my_uart_rx_buffer[20] = {0};
 	if(event == UART_EVENT_RX_FULL)
 	{
-		LPUART_DRV_ReceiveData(INST_LPUART0, &uart_rx_data, 1);
-		printf("call back rx: %c\r\n", uart_rx_data);
-		LPUART_DRV_SendDataPolling(INST_LPUART0, (uint8_t *)"received!\r\n", 11u);
+//		LPUART_DRV_ReceiveData(INST_LPUART0, &uart_rx_data, 1);
+//		printf("call back rx: %c\r\n", uart_rx_data);
 
 //		uart_status = LPUART_DRV_ReceiveDataBlocking(INST_LPUART0, my_uart_rx_buffer, 15, 10);
-//		if( uart_status == STATUS_SUCCESS )
-//		{
-//			if(strcmp((char *)my_uart_rx_buffer, "firmware update") == 0)
-//			{
-//				printf("update\n");
-//			}
-//		}
 	}
-}
-
-void uart_rx_handler_test(void)
-{
-	printf("rx\n");
 }
 
 /* END main */

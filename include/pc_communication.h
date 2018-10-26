@@ -9,9 +9,13 @@
 #define PC_COMMUNICATION_H_
 
 #include "stdint.h"
+#include "stdbool.h"
 
 #define DATA_PACKET_LENGTH	36
 
+/*
+ * Data Packet Structure
+ */
 typedef union
 {
 	uint8_t buffer[DATA_PACKET_LENGTH];			// data packet buffer
@@ -25,6 +29,22 @@ typedef union
 	} item;
 } DATA_PACKET_t;
 
+/*
+ * The finite state set for PC-to-UART Receiver State Machine
+ */
+typedef enum
+{
+	READY_FOR_DATA_RX,						// Check if UART RX Module is busy or not.
+	INITIATE_DATA_RX,						// Initiate UART RX process if the UART RX Module is not busy.
+	CHECK_UART_RX_COMPLETE,					// Check if UART RX process is complete.
+	PARSE_RX_DATA_PACKET,					// Parse the received UART data
+	SEND_ACKNOWLEDGE_MSG					// Send the acknowledge message to PC
+} UART_RECEIVER_STATE_t;
+
+
 extern DATA_PACKET_t rx_data_packet;
+
+void PC2UART_communication_init(void);
+void PC2UART_receiver_run(void);
 
 #endif /* PC_COMMUNICATION_H_ */
