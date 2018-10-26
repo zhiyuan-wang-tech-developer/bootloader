@@ -35,7 +35,7 @@ uint8_t test_text[] = "allround technology autoliv test\r\n";
 uint8_t delete_text[16] = {0xFF};
 
 uint8_t uart_rx_data;
-uint8_t uart_rx_buffer[20] = {0};
+
 
 flash_ssd_config_t flashSSDConfig;
 
@@ -46,8 +46,6 @@ void uart_bluetooth_test(void);
 void flash_test_init(void);
 void program_flash_test(void);
 void eeprom_test(void);
-
-void handle_uart_rx_data(void *driverState, uart_event_t event, void *userData);
 
 /*!
   \brief The main function for the project.
@@ -80,8 +78,6 @@ int main(void)
     }
 
     PC2UART_communication_init();
-
-//    LPUART_DRV_InstallRxCallback(INST_LPUART0, handle_uart_rx_data, NULL);
 
 //    LPUART_DRV_SendDataPolling(INST_LPUART0, test_text, sizeof(test_text));
 
@@ -231,18 +227,6 @@ void eeprom_test(void)
         read_data = *((uint8_t *)eeprom_address_1);
         read_data = *((uint8_t *)eeprom_address_2);
     }
-}
-
-
-void handle_uart_rx_data(void *driverState, uart_event_t event, void *userData)
-{
-	if(event == UART_EVENT_RX_FULL)
-	{
-//		LPUART_DRV_ReceiveData(INST_LPUART0, &uart_rx_data, 1);
-//		printf("call back rx: %c\r\n", uart_rx_data);
-
-//		uart_status = LPUART_DRV_ReceiveDataBlocking(INST_LPUART0, my_uart_rx_buffer, 15, 10);
-	}
 }
 
 /* END main */

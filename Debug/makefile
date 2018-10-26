@@ -2,7 +2,7 @@
 # Automatically-generated file. Do not edit!
 ################################################################################
 
-#Progress monitor hint: 35
+#Progress monitor hint: 37
 first : all
 -include ../makefile.init
 
@@ -66,14 +66,14 @@ all: warning-messages explicit-dependencies AutoLivBootloader.elf secondary-outp
 # Tool invocations
 AutoLivBootloader.elf: $(OBJS) D:/AllRound/Project/AutoLivBootloader/Project_Settings/Linker_Files/S32K144_64_flash.ld $(USER_OBJS)
 	@echo 'Building target: $@'
-	@echo 'Executing target #36 $@'
+	@echo 'Executing target #38 $@'
 	@echo 'Invoking: Standard S32DS C Linker'
 	arm-none-eabi-gcc -o "AutoLivBootloader.elf" "@AutoLivBootloader.args"  $(USER_OBJS_QUOTED) $(LIBS_QUOTED)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 AutoLivBootloader.siz: $(EXECUTABLES)
-	@echo 'Executing target #37 $@'
+	@echo 'Executing target #39 $@'
 	@echo 'Invoking: Standard S32DS Print Size'
 	arm-none-eabi-size --format=berkeley $(EXECUTABLES)
 	@echo 'Finished building: $@'

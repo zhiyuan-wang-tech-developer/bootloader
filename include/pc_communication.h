@@ -36,10 +36,25 @@ typedef enum
 {
 	READY_FOR_DATA_RX,						// Check if UART RX Module is busy or not.
 	INITIATE_DATA_RX,						// Initiate UART RX process if the UART RX Module is not busy.
-	CHECK_UART_RX_COMPLETE,					// Check if UART RX process is complete.
-	PARSE_RX_DATA_PACKET,					// Parse the received UART data
+	FIND_RX_DATA_PACKET_HEADER,				// Find Rx data packet header from UART RX Ring Buffer.
+	CHECK_RX_DATA_PACKET_TYPE,
+	CHECK_RX_DATA_PACKET_SIZE,
+	EXTRACT_RX_DATA_PACKET,
+	CHECK_RX_DATA_PACKET,					// Check the extracted data packet
 	SEND_ACKNOWLEDGE_MSG					// Send the acknowledge message to PC
 } UART_RECEIVER_STATE_t;
+
+/*
+ * UART Receive FIFO Ring Buffer Structure
+ */
+typedef struct
+{
+	uint16_t putByteIndex;
+	uint16_t getByteIndex;
+	uint16_t usedBytesCount;		// Count the number of bytes that are already in the ring buffer.
+	uint16_t size;
+	uint8_t * pRingBuffer;
+} FIFO_RING_BUFFER_t;
 
 
 extern DATA_PACKET_t rx_data_packet;

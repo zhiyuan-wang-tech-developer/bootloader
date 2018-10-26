@@ -52,7 +52,20 @@ Sources/main.o: ../Sources/main.c \
  D:/AllRound/Project/AutoLivBootloader/Generated_Code/dmaController1.h \
  D:/AllRound/Project/AutoLivBootloader/Generated_Code/lpspi0_adc.h \
  D:/AllRound/Project/AutoLivBootloader/Generated_Code/lpspi2_dac.h \
- D:/AllRound/Project/AutoLivBootloader/Generated_Code/Flash.h
+ D:/AllRound/Project/AutoLivBootloader/Generated_Code/Flash.h \
+ D:/AllRound/Project/AutoLivBootloader/include/pc_communication.h \
+ C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/stdio.h \
+ C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/cstdio \
+ C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/eof.h \
+ C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/va_list.h \
+ C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/file_struc.h \
+ C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/stdio_api.h \
+ C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/stdarg.h \
+ C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/cstdarg \
+ C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/arm/stdarg.ARM.h \
+ C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/string.h \
+ C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/cstring \
+ C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/string_api.h
 
 C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/lib_c99.prefix:
 
@@ -161,3 +174,29 @@ D:/AllRound/Project/AutoLivBootloader/Generated_Code/lpspi0_adc.h:
 D:/AllRound/Project/AutoLivBootloader/Generated_Code/lpspi2_dac.h:
 
 D:/AllRound/Project/AutoLivBootloader/Generated_Code/Flash.h:
+
+D:/AllRound/Project/AutoLivBootloader/include/pc_communication.h:
+
+C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/stdio.h:
+
+C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/cstdio:
+
+C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/eof.h:
+
+C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/va_list.h:
+
+C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/file_struc.h:
+
+C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/stdio_api.h:
+
+C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/stdarg.h:
+
+C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/cstdarg:
+
+C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/arm/stdarg.ARM.h:
+
+C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/string.h:
+
+C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/cstring:
+
+C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/string_api.h:

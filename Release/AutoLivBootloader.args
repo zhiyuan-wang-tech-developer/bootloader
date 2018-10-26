@@ -1,4 +1,6 @@
+"./Sources/pc_communication.o"
 "./Sources/main.o"
+"./Sources/bootloader.o"
 "./SDK/rtos/osif/osif_baremetal.o"
 "./SDK/platform/drivers/src/pins/pins_port_hw_access.o"
 "./SDK/platform/drivers/src/pins/pins_driver.o"

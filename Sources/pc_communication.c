@@ -10,19 +10,36 @@
 #include "stdio.h"
 #include "string.h"
 
+#define UART_RX_RING_BUFFER_SIZE	256
+
 // Acknowledge message
-#define ACKNOWLEDGE_MSG 	"Send acknowledge to PC!\r\n"
-#define ERROR_MSG			"Send error to PC!\r\n"
+#define ACKNOWLEDGE_MSG 	"Send acknowledge to PC! Checksum OK\r\n"
+#define ERROR_MSG			"Send error to PC! Checksum Wrong\r\n"
 
 DATA_PACKET_t rx_data_packet;
+
+uint8_t uart_rx_buffer[UART_RX_RING_BUFFER_SIZE] = {0};
+FIFO_RING_BUFFER_t uart_rx_ring_buffer = {
+			.putByteIndex = 0,
+			.getByteIndex = 0,
+			.usedBytesCount = 0,
+			.size = sizeof(uart_rx_buffer),
+			.pRingBuffer = uart_rx_buffer
+			};
 
 UART_RECEIVER_STATE_t PC2UART_ReceiverStatus = READY_FOR_DATA_RX;
 
 const uint8_t DataPacketHeader = 0x55u;
 const uint8_t DataPacketType_PutData = 0x0Bu;
+const uint8_t DataPacketSize = 36u; // 0x24u
 
 // Function declaration for internal use
 bool isRxDataPacketCorrect( DATA_PACKET_t * pDataPacket );
+bool FifoRingBuffer_IsEmpty(void);
+bool FifoRingBuffer_IsFull(void);
+bool FifoRingBuffer_PutByte(uint8_t InputByte);
+bool FifoRingBuffer_GetByte(uint8_t * pOutputByte);
+void handleRxByte(void *driverState, uart_event_t event, void *userData);
 
 /*
  * Initialize the PC to s32k144 MCU UART communication
@@ -34,6 +51,7 @@ void PC2UART_communication_init(void)
     INT_SYS_SetPriority(LPUART0_RxTx_IRQn, 8);
 //    uint8_t lpuart0_interrupt_priority = 0;
 //    lpuart0_interrupt_priority = INT_SYS_GetPriority(LPUART0_RxTx_IRQn);
+    LPUART_DRV_InstallRxCallback(INST_LPUART0, handleRxByte, NULL);
 }
 
 /*
@@ -41,67 +59,152 @@ void PC2UART_communication_init(void)
  */
 void PC2UART_receiver_run(void)
 {
-	static status_t uart_rx_status = 0;
-	static uint32_t remainingRxBytes = 0;				// The remaining number of bytes to be received
+//	static status_t uart_rx_status = 0;
+	static uint32_t byteCount = 0;						// Count the number of data bytes that are read out of the ring buffer.
 	static bool isDataPacketCorrect = false;			// Indicate if the received data packet is expected data packet.
+	uint8_t rxByte = 0;
 
 	switch (PC2UART_ReceiverStatus)
 	{
 		case READY_FOR_DATA_RX:
 			if( lpuart0_State.isRxBusy )
 			{
-				// There is an active data reception. WAIT!
+				// There is an active data reception. Abort reception and WAIT!
+				LPUART_DRV_AbortReceivingData(INST_LPUART0); 	// Disable RX interrupt and clear isRxBusy flag
 				PC2UART_ReceiverStatus = READY_FOR_DATA_RX;
 			}
 			else
 			{
-				// UART rx module is not busy now. START data reception!
+				// UART RX module is not busy now. START data reception!
 				PC2UART_ReceiverStatus = INITIATE_DATA_RX;
 			}
 			break;
 
 		case INITIATE_DATA_RX:
 			// Call non-blocking receive function to initiate the data reception process.
-			LPUART_DRV_ReceiveData(INST_LPUART0, rx_data_packet.buffer, 15);
+			LPUART_DRV_ReceiveData(INST_LPUART0, NULL, 0u);		// Enable RX Interrupt
 			// Immediately return after the non-blocking receive data function is called.
-			PC2UART_ReceiverStatus = CHECK_UART_RX_COMPLETE;
-			// Clear the rx data packet.
-			memset(rx_data_packet.buffer, 0u, sizeof(rx_data_packet.buffer));
+			PC2UART_ReceiverStatus = FIND_RX_DATA_PACKET_HEADER;
 			break;
 
-		case CHECK_UART_RX_COMPLETE:
-			uart_rx_status = LPUART_DRV_GetReceiveStatus(INST_LPUART0, &remainingRxBytes);
-			if( uart_rx_status == STATUS_SUCCESS )
+		case FIND_RX_DATA_PACKET_HEADER:
+			if( FifoRingBuffer_IsEmpty() )
 			{
-				// The data reception has been complete successfully!
-				// Parse received data after data reception is complete.
-				PC2UART_ReceiverStatus = PARSE_RX_DATA_PACKET;
-			}
-			else if( uart_rx_status == STATUS_BUSY )
-			{
-				// The data reception is still in progress!
-				// Wait and Continue to check if data reception is complete.
-				PC2UART_ReceiverStatus = CHECK_UART_RX_COMPLETE;
-				// Print the number of bytes that still need to be received.
-//				printf("Remaining Rx Bytes: %lu\r\n", remainingRxBytes);
+				// No rx byte in the FIFO Ring Buffer.
+				// Wait until there is at least one rx byte.
+				PC2UART_ReceiverStatus = FIND_RX_DATA_PACKET_HEADER;
 			}
 			else
 			{
-				// For other exceptional rx status, Reset the receiver state machine.
-				PC2UART_ReceiverStatus = READY_FOR_DATA_RX;
+				// FIFO Ring Buffer has at least one byte.
+				FifoRingBuffer_GetByte(&rxByte);
+				// Find rx data packet header
+				if( rxByte == DataPacketHeader )
+				{
+					// The data packet header is found. Next to check data packet type
+					PC2UART_ReceiverStatus = CHECK_RX_DATA_PACKET_TYPE;
+					// Clear the rx data packet.
+					memset(rx_data_packet.buffer, 0u, sizeof(rx_data_packet.buffer));
+					rx_data_packet.item.header = rxByte;
+				}
+				else
+				{
+					// The data packet header is not found. Continue to find the header.
+					PC2UART_ReceiverStatus = FIND_RX_DATA_PACKET_HEADER;
+				}
 			}
 			break;
 
-		case PARSE_RX_DATA_PACKET:
-			if( 0 == strncmp((char *)rx_data_packet.buffer, "firmware update", 15) )
+		case CHECK_RX_DATA_PACKET_TYPE:
+			if( FifoRingBuffer_IsEmpty() )
+			{
+				// No rx byte in the FIFO Ring Buffer.
+				// Wait until there is at least one rx byte.
+				PC2UART_ReceiverStatus = CHECK_RX_DATA_PACKET_TYPE;
+			}
+			else
+			{
+				// FIFO Ring Buffer has at least one byte.
+				FifoRingBuffer_GetByte(&rxByte);
+				// Check rx data packet type.
+				if( rxByte == DataPacketType_PutData )
+				{
+					// The data packet type is correct. Next to check data packet size.
+					PC2UART_ReceiverStatus = CHECK_RX_DATA_PACKET_SIZE;
+					rx_data_packet.item.type = rxByte;
+				}
+				else
+				{
+					// The data packet type is wrong. Restart to find the header.
+					PC2UART_ReceiverStatus = FIND_RX_DATA_PACKET_HEADER;
+				}
+			}
+			break;
+
+		case CHECK_RX_DATA_PACKET_SIZE:
+			if( FifoRingBuffer_IsEmpty() )
+			{
+				// No rx byte in the FIFO Ring Buffer.
+				// Wait until there is at least one rx byte.
+				PC2UART_ReceiverStatus = CHECK_RX_DATA_PACKET_SIZE;
+			}
+			else
+			{
+				// FIFO Ring Buffer has at least one byte.
+				FifoRingBuffer_GetByte(&rxByte);
+				// Check rx data packet size.
+				if( rxByte == DataPacketSize )
+				{
+					// The data packet size is correct. Next to receive data payload.
+					PC2UART_ReceiverStatus = EXTRACT_RX_DATA_PACKET;
+					rx_data_packet.item.size = rxByte;
+				}
+				else
+				{
+					// The data packet size is wrong. Restart to find the header.
+					PC2UART_ReceiverStatus = FIND_RX_DATA_PACKET_HEADER;
+				}
+			}
+			break;
+
+		case EXTRACT_RX_DATA_PACKET:
+			if( FifoRingBuffer_IsEmpty() && (byteCount < (DataPacketSize -3u)) )
+			{
+				PC2UART_ReceiverStatus = EXTRACT_RX_DATA_PACKET;
+			}
+			else
+			{
+				if( (byteCount >= 0u) && (byteCount < 32u) )
+				{
+					// Read data payload (32 bytes)
+					FifoRingBuffer_GetByte(&rxByte);
+					rx_data_packet.item.raw_data[byteCount++] = rxByte;
+					PC2UART_ReceiverStatus = EXTRACT_RX_DATA_PACKET;
+				}
+				else if( byteCount == 32u )
+				{
+					// Read checksum
+					FifoRingBuffer_GetByte(&rxByte);
+					rx_data_packet.item.checksum = rxByte;
+					byteCount = 0;
+					PC2UART_ReceiverStatus = CHECK_RX_DATA_PACKET;
+				}
+				else
+				{
+					// byteCount error and restart to find the header
+					PC2UART_ReceiverStatus = FIND_RX_DATA_PACKET_HEADER;
+				}
+			}
+			break;
+
+		case CHECK_RX_DATA_PACKET:
+			if( isRxDataPacketCorrect(&rx_data_packet) )
 			{
 				isDataPacketCorrect = true;
-				printf("start to update firmware!\n");
 			}
 			else
 			{
 				isDataPacketCorrect = false;
-				printf("rx data packet can not be parsed!\n");
 			}
 			PC2UART_ReceiverStatus = SEND_ACKNOWLEDGE_MSG;
 			break;
@@ -115,7 +218,7 @@ void PC2UART_receiver_run(void)
 			{
 				LPUART_DRV_SendDataPolling(INST_LPUART0, (uint8_t *)ERROR_MSG, strlen(ERROR_MSG));
 			}
-			PC2UART_ReceiverStatus = READY_FOR_DATA_RX;
+			PC2UART_ReceiverStatus = FIND_RX_DATA_PACKET_HEADER;
 			break;
 
 		default:
@@ -144,6 +247,7 @@ bool isRxDataPacketCorrect( DATA_PACKET_t * pDataPacket )
 		return true;
 	else
 		return false;
+//		return true;
 }
 
 /*
@@ -175,4 +279,78 @@ bool parseDataPacket( DATA_PACKET_t * pDataPacket )
 		return false;
 	}
 	return true;
+}
+
+
+/*
+ * FIFO Buffer Operation Function
+ */
+
+// Check if the RX FIFO Ring Buffer is empty.
+bool FifoRingBuffer_IsEmpty(void)
+{
+	if( uart_rx_ring_buffer.usedBytesCount == 0 )
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+// Check if the RX FIFO Ring Buffer is full.
+bool FifoRingBuffer_IsFull(void)
+{
+	if( uart_rx_ring_buffer.usedBytesCount == uart_rx_ring_buffer.size )
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+// Put a byte into the RX FIFO Ring Buffer
+bool FifoRingBuffer_PutByte(uint8_t InputByte)
+{
+	if(FifoRingBuffer_IsFull())
+	{
+		return false;
+	}
+	uart_rx_ring_buffer.pRingBuffer[uart_rx_ring_buffer.putByteIndex] = InputByte;
+	uart_rx_ring_buffer.usedBytesCount++;
+	uart_rx_ring_buffer.putByteIndex = (uart_rx_ring_buffer.putByteIndex + 1) % uart_rx_ring_buffer.size;
+	return true;
+}
+
+// Get a byte from the RX FIFO Ring Buffer
+bool FifoRingBuffer_GetByte(uint8_t * pOutputByte)
+{
+	if(pOutputByte == NULL)
+	{
+		return false;
+	}
+	if(FifoRingBuffer_IsEmpty())
+	{
+		return false;
+	}
+	*pOutputByte = uart_rx_ring_buffer.pRingBuffer[uart_rx_ring_buffer.getByteIndex];
+	uart_rx_ring_buffer.usedBytesCount--;
+	uart_rx_ring_buffer.getByteIndex = (uart_rx_ring_buffer.getByteIndex + 1) % uart_rx_ring_buffer.size;
+	return true;
+}
+
+// UART Rx Callback for continuous byte by byte reception
+void handleRxByte(void *driverState, uart_event_t event, void *userData)
+{
+	uint8_t rxByte = 0;
+    /* Check the event type */
+	if(event == UART_EVENT_RX_FULL)
+	{
+		rxByte = (uint8_t)LPUART0->DATA;
+//		printf("call back rx: %c\r\n", rxByte);
+		FifoRingBuffer_PutByte(rxByte);
+	}
 }
