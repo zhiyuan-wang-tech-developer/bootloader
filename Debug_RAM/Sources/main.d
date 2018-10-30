@@ -54,6 +54,7 @@ Sources/main.o: ../Sources/main.c \
  D:/AllRound/Project/AutoLivBootloader/Generated_Code/lpspi2_dac.h \
  D:/AllRound/Project/AutoLivBootloader/Generated_Code/Flash.h \
  D:/AllRound/Project/AutoLivBootloader/include/pc_communication.h \
+ D:/AllRound/Project/AutoLivBootloader/include/bootloader.h \
  C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/stdio.h \
  C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/cstdio \
  C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/eof.h \
@@ -176,6 +177,8 @@ D:/AllRound/Project/AutoLivBootloader/Generated_Code/lpspi2_dac.h:
 D:/AllRound/Project/AutoLivBootloader/Generated_Code/Flash.h:
 
 D:/AllRound/Project/AutoLivBootloader/include/pc_communication.h:
+
+D:/AllRound/Project/AutoLivBootloader/include/bootloader.h:
 
 C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/stdio.h:
 
