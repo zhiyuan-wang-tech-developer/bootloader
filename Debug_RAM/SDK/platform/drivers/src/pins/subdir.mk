@@ -13,17 +13,9 @@ C_SRCS += \
 ../SDK/platform/drivers/src/pins/pins_driver.c \
 ../SDK/platform/drivers/src/pins/pins_port_hw_access.c \
 
-OBJS_OS_FORMAT += \
-./SDK/platform/drivers/src/pins/pins_driver.o \
-./SDK/platform/drivers/src/pins/pins_port_hw_access.o \
-
 C_DEPS_QUOTED += \
 "./SDK/platform/drivers/src/pins/pins_driver.d" \
 "./SDK/platform/drivers/src/pins/pins_port_hw_access.d" \
-
-OBJS += \
-./SDK/platform/drivers/src/pins/pins_driver.o \
-./SDK/platform/drivers/src/pins/pins_port_hw_access.o \
 
 OBJS_QUOTED += \
 "./SDK/platform/drivers/src/pins/pins_driver.o" \
@@ -32,6 +24,14 @@ OBJS_QUOTED += \
 C_DEPS += \
 ./SDK/platform/drivers/src/pins/pins_driver.d \
 ./SDK/platform/drivers/src/pins/pins_port_hw_access.d \
+
+OBJS_OS_FORMAT += \
+./SDK/platform/drivers/src/pins/pins_driver.o \
+./SDK/platform/drivers/src/pins/pins_port_hw_access.o \
+
+OBJS += \
+./SDK/platform/drivers/src/pins/pins_driver.o \
+./SDK/platform/drivers/src/pins/pins_port_hw_access.o \
 
 
 # Each subdirectory must supply rules for building sources it contributes

@@ -16,6 +16,14 @@
 #define ACKNOWLEDGE_MSG 	"Send acknowledge to PC! Checksum OK\r\n"
 #define ERROR_MSG			"Send error to PC! Checksum Wrong\r\n"
 
+#define ACK_CODE	0x10u	// Acknowledge response data packet type
+#define ERR_CODE	0x11u	// No Acknowledge response data packet type
+
+// No acknowledge response data packet error info
+const uint8_t 	WriteFlashMemoryError 	= 120u;	// The writing of flash program memory has failed
+const uint8_t	ChecksumError       	= 121u;
+const uint8_t	TimeoutError 			= 122u;
+
 DATA_PACKET_t rx_data_packet;
 
 uint8_t uart_rx_buffer[UART_RX_RING_BUFFER_SIZE] = {0};
@@ -31,10 +39,17 @@ UART_RECEIVER_STATE_t PC2UART_ReceiverStatus = READY_FOR_DATA_RX;
 
 const uint8_t DataPacketHeader = 0x55u;
 const uint8_t DataPacketType_PutData = 0x0Bu;
-const uint8_t DataPacketSize = 36u; // 0x24u
+const uint8_t DataPacketSize = 68u; // 0x44u
 
 // Function declaration for internal use
 bool isRxDataPacketCorrect( DATA_PACKET_t * pDataPacket );
+bool parseDataPacket( DATA_PACKET_t * pDataPacket );
+void printDataPacket( DATA_PACKET_t * pDataPacket );
+void calculateChecksum( DATA_PACKET_t * pDataPacket );
+
+void SendAcknowledge(void);
+void SendNoAcknowledge(uint8_t errorInfo);
+
 bool FifoRingBuffer_IsEmpty(void);
 bool FifoRingBuffer_IsFull(void);
 bool FifoRingBuffer_PutByte(uint8_t InputByte);
@@ -57,10 +72,11 @@ void PC2UART_communication_init(void)
 /*
  * Run PC to s32k144 MCU UART rx communication state machine
  */
-void PC2UART_receiver_run(void)
+void PC2UART_receiver_run_test(void)
 {
 //	static status_t uart_rx_status = 0;
 	static uint32_t byteCount = 0;						// Count the number of data bytes that are read out of the ring buffer.
+//	static uint8_t byteTotalNum = 0;					// Total number of bytes in a data packet
 	static bool isDataPacketCorrect = false;			// Indicate if the received data packet is expected data packet.
 	uint8_t rxByte = 0;
 
@@ -144,16 +160,16 @@ void PC2UART_receiver_run(void)
 		case CHECK_RX_DATA_PACKET_SIZE:
 			if( FifoRingBuffer_IsEmpty() )
 			{
-				// No rx byte in the FIFO Ring Buffer.
-				// Wait until there is at least one rx byte.
+				// No RX byte in the FIFO Ring Buffer.
+				// Wait until there is at least one RX byte.
 				PC2UART_ReceiverStatus = CHECK_RX_DATA_PACKET_SIZE;
 			}
 			else
 			{
 				// FIFO Ring Buffer has at least one byte.
 				FifoRingBuffer_GetByte(&rxByte);
-				// Check rx data packet size.
-				if( rxByte == DataPacketSize )
+				// Check RX data packet size.
+				if( (rxByte >= 4u) && (rxByte <= 255u) )
 				{
 					// The data packet size is correct. Next to receive data payload.
 					PC2UART_ReceiverStatus = EXTRACT_RX_DATA_PACKET;
@@ -168,20 +184,20 @@ void PC2UART_receiver_run(void)
 			break;
 
 		case EXTRACT_RX_DATA_PACKET:
-			if( FifoRingBuffer_IsEmpty() && (byteCount < (DataPacketSize -3u)) )
+			if( FifoRingBuffer_IsEmpty() && (byteCount < (rx_data_packet.item.size - 3u)) )		// Now exclude the header, type and size
 			{
 				PC2UART_ReceiverStatus = EXTRACT_RX_DATA_PACKET;
 			}
 			else
 			{
-				if( (byteCount >= 0u) && (byteCount < 32u) )
+				if( (byteCount >= 0u) && (byteCount < (rx_data_packet.item.size - 4u)) )
 				{
-					// Read data payload (32 bytes)
+					// Read data payload
 					FifoRingBuffer_GetByte(&rxByte);
 					rx_data_packet.item.raw_data[byteCount++] = rxByte;
 					PC2UART_ReceiverStatus = EXTRACT_RX_DATA_PACKET;
 				}
-				else if( byteCount == 32u )
+				else if( byteCount == (rx_data_packet.item.size - 4u) )
 				{
 					// Read checksum
 					FifoRingBuffer_GetByte(&rxByte);
@@ -198,7 +214,7 @@ void PC2UART_receiver_run(void)
 			break;
 
 		case CHECK_RX_DATA_PACKET:
-			if( isRxDataPacketCorrect(&rx_data_packet) )
+			if( parseDataPacket(&rx_data_packet) )
 			{
 				isDataPacketCorrect = true;
 			}
@@ -207,16 +223,21 @@ void PC2UART_receiver_run(void)
 				isDataPacketCorrect = false;
 			}
 			PC2UART_ReceiverStatus = SEND_ACKNOWLEDGE_MSG;
+			printDataPacket(&rx_data_packet);
 			break;
 
 		case SEND_ACKNOWLEDGE_MSG:
 			if( isDataPacketCorrect )
 			{
-				LPUART_DRV_SendDataPolling(INST_LPUART0, (uint8_t *)ACKNOWLEDGE_MSG, strlen(ACKNOWLEDGE_MSG));
+				SendAcknowledge();
+//				LPUART_DRV_SendDataPolling(INST_LPUART0, (uint8_t *)ACKNOWLEDGE_MSG, strlen(ACKNOWLEDGE_MSG));
 			}
 			else
 			{
-				LPUART_DRV_SendDataPolling(INST_LPUART0, (uint8_t *)ERROR_MSG, strlen(ERROR_MSG));
+				printf("incorrect packet\r\n");
+				calculateChecksum(&rx_data_packet);
+				SendNoAcknowledge(ChecksumError);
+//				LPUART_DRV_SendDataPolling(INST_LPUART0, (uint8_t *)ERROR_MSG, strlen(ERROR_MSG));
 			}
 			PC2UART_ReceiverStatus = FIND_RX_DATA_PACKET_HEADER;
 			break;
@@ -242,12 +263,11 @@ bool isRxDataPacketCorrect( DATA_PACKET_t * pDataPacket )
 	{
 		sum += pDataPacket->buffer[i];
 	}
-	sum %= 256;
+	sum %= 256u;
 	if( sum == 0 )
 		return true;
 	else
 		return false;
-//		return true;
 }
 
 /*
@@ -269,7 +289,8 @@ bool parseDataPacket( DATA_PACKET_t * pDataPacket )
 		return false;
 	}
 	// Check data size
-	if( pDataPacket->item.size != DATA_PACKET_LENGTH )
+	// One data packet contains at least header, type, size, checksum.
+	if( pDataPacket->item.size < 4u )
 	{
 		return false;
 	}
@@ -281,11 +302,73 @@ bool parseDataPacket( DATA_PACKET_t * pDataPacket )
 	return true;
 }
 
+void printDataPacket( DATA_PACKET_t * pDataPacket )
+{
+	uint8_t i = 0;
+	printf("Data Packet:");
+	for( i = 0; i < pDataPacket->item.size - 1u; i++ )
+	{
+		printf(" %02x", pDataPacket->buffer[i]);
+	}
+	printf(" %02x\r\n", pDataPacket->item.checksum);
+}
+
+void calculateChecksum( DATA_PACKET_t * pDataPacket )
+{
+	uint8_t i = 0;
+	uint8_t checksum = 0;
+	for( i = 0; i < pDataPacket->item.size - 1u; i++ )
+	{
+		checksum += pDataPacket->buffer[i];
+	}
+	checksum = 256u - checksum;
+	printf("Correct checksum: %02x\r\n", checksum);
+}
+
+// Send Acknowledge back to the PC
+void SendAcknowledge(void)
+{
+	ACK_DATA_PACKET_t ack_data_packet;
+	// Clear acknowledge data packet
+	memset(ack_data_packet.buffer, 0, sizeof(ack_data_packet.buffer));
+	ack_data_packet.item.header = DataPacketHeader;
+	ack_data_packet.item.type = ACK_CODE;
+	ack_data_packet.item.size = ACK_DATA_PACKET_LENGTH;
+	// Calculate the checksum
+	uint8_t checksum = 0u;
+	uint8_t i = 0;
+	for( i = ack_data_packet.item.size - 2; i != 255; i-- )
+	{
+		checksum -= ack_data_packet.buffer[i];
+	}
+	ack_data_packet.item.checksum = checksum;
+	LPUART_DRV_SendDataPolling(INST_LPUART0, ack_data_packet.buffer, sizeof(ack_data_packet.buffer));
+}
+
+// Send No Acknowledge back to the PC
+void SendNoAcknowledge(uint8_t errorInfo)
+{
+	NACK_DATA_PACKET_t nack_data_packet;
+	// Clear NO acknowledge data packet
+	memset(nack_data_packet.buffer, 0, sizeof(nack_data_packet.buffer));
+	nack_data_packet.item.header = DataPacketHeader;
+	nack_data_packet.item.type = ERR_CODE;
+	nack_data_packet.item.size = NACK_DATA_PACKET_LENGTH;
+	nack_data_packet.item.error_info = errorInfo;
+	// Calculate the checksum
+	uint8_t checksum = 0u;
+	uint8_t i = 0;
+	for( i = nack_data_packet.item.size - 2u; i != 255; i-- )
+	{
+		checksum -= nack_data_packet.buffer[i];
+	}
+	nack_data_packet.item.checksum = checksum;
+	LPUART_DRV_SendDataPolling(INST_LPUART0, nack_data_packet.buffer, sizeof(nack_data_packet.buffer));
+}
 
 /*
  * FIFO Buffer Operation Function
  */
-
 // Check if the RX FIFO Ring Buffer is empty.
 bool FifoRingBuffer_IsEmpty(void)
 {

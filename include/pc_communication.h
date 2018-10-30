@@ -11,7 +11,10 @@
 #include "stdint.h"
 #include "stdbool.h"
 
-#define DATA_PACKET_LENGTH	36
+#define DATA_PACKET_LENGTH			255u
+#define NACK_DATA_PACKET_LENGTH		5u
+#define  ACK_DATA_PACKET_LENGTH		4u
+
 
 /*
  * Data Packet Structure
@@ -24,10 +27,43 @@ typedef union
 		uint8_t header;			// packet header = 0x55
 		uint8_t type;			// packet type / packet identifier 0..255
 		uint8_t size;			// packet size = total amount of bytes in a data packet
-		uint8_t raw_data[32];	// 32-bytes raw data payload
-		uint8_t checksum; 		// ( header + type + size + raw_data[0...31] + checksum ) % 256 == 0
+		uint8_t raw_data[251];	// raw data payload
+		uint8_t checksum; 		// ( header + type + size + raw_data[0...] + checksum ) % 256 == 0
 	} item;
 } DATA_PACKET_t;
+
+
+/*
+ * MCU-to-PC No Acknowledge Data Packet
+ */
+typedef union
+{
+	uint8_t buffer[NACK_DATA_PACKET_LENGTH];
+	struct
+	{
+		uint8_t header;
+		uint8_t type;
+		uint8_t size;
+		uint8_t error_info;
+		uint8_t checksum;
+	} item;
+} NACK_DATA_PACKET_t;
+
+
+/*
+ * MCU-to-PC Acknowledge Data Packet
+ */
+typedef union
+{
+	uint8_t buffer[ACK_DATA_PACKET_LENGTH];
+	struct
+	{
+		uint8_t header;
+		uint8_t type;
+		uint8_t size;
+		uint8_t checksum;
+	} item;
+} ACK_DATA_PACKET_t;
 
 /*
  * The finite state set for PC-to-UART Receiver State Machine
@@ -60,6 +96,6 @@ typedef struct
 extern DATA_PACKET_t rx_data_packet;
 
 void PC2UART_communication_init(void);
-void PC2UART_receiver_run(void);
+void PC2UART_receiver_run_test(void);
 
 #endif /* PC_COMMUNICATION_H_ */

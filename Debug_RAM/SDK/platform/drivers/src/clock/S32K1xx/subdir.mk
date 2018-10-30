@@ -11,20 +11,20 @@ C_SRCS_QUOTED += \
 C_SRCS += \
 ../SDK/platform/drivers/src/clock/S32K1xx/clock_S32K1xx.c \
 
-OBJS_OS_FORMAT += \
-./SDK/platform/drivers/src/clock/S32K1xx/clock_S32K1xx.o \
-
 C_DEPS_QUOTED += \
 "./SDK/platform/drivers/src/clock/S32K1xx/clock_S32K1xx.d" \
-
-OBJS += \
-./SDK/platform/drivers/src/clock/S32K1xx/clock_S32K1xx.o \
 
 OBJS_QUOTED += \
 "./SDK/platform/drivers/src/clock/S32K1xx/clock_S32K1xx.o" \
 
 C_DEPS += \
 ./SDK/platform/drivers/src/clock/S32K1xx/clock_S32K1xx.d \
+
+OBJS_OS_FORMAT += \
+./SDK/platform/drivers/src/clock/S32K1xx/clock_S32K1xx.o \
+
+OBJS += \
+./SDK/platform/drivers/src/clock/S32K1xx/clock_S32K1xx.o \
 
 
 # Each subdirectory must supply rules for building sources it contributes

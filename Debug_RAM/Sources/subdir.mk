@@ -15,20 +15,10 @@ C_SRCS += \
 ../Sources/main.c \
 ../Sources/pc_communication.c \
 
-OBJS_OS_FORMAT += \
-./Sources/bootloader.o \
-./Sources/main.o \
-./Sources/pc_communication.o \
-
 C_DEPS_QUOTED += \
 "./Sources/bootloader.d" \
 "./Sources/main.d" \
 "./Sources/pc_communication.d" \
-
-OBJS += \
-./Sources/bootloader.o \
-./Sources/main.o \
-./Sources/pc_communication.o \
 
 OBJS_QUOTED += \
 "./Sources/bootloader.o" \
@@ -39,6 +29,16 @@ C_DEPS += \
 ./Sources/bootloader.d \
 ./Sources/main.d \
 ./Sources/pc_communication.d \
+
+OBJS_OS_FORMAT += \
+./Sources/bootloader.o \
+./Sources/main.o \
+./Sources/pc_communication.o \
+
+OBJS += \
+./Sources/bootloader.o \
+./Sources/main.o \
+./Sources/pc_communication.o \
 
 
 # Each subdirectory must supply rules for building sources it contributes

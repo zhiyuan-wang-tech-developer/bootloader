@@ -29,18 +29,6 @@ C_SRCS += \
 ../Generated_Code/lpuart0.c \
 ../Generated_Code/pin_mux.c \
 
-OBJS_OS_FORMAT += \
-./Generated_Code/Cpu.o \
-./Generated_Code/Flash.o \
-./Generated_Code/clockManager1.o \
-./Generated_Code/dmaController1.o \
-./Generated_Code/lpTmr1.o \
-./Generated_Code/lpit1.o \
-./Generated_Code/lpspi0_adc.o \
-./Generated_Code/lpspi2_dac.o \
-./Generated_Code/lpuart0.o \
-./Generated_Code/pin_mux.o \
-
 C_DEPS_QUOTED += \
 "./Generated_Code/Cpu.d" \
 "./Generated_Code/Flash.d" \
@@ -52,18 +40,6 @@ C_DEPS_QUOTED += \
 "./Generated_Code/lpspi2_dac.d" \
 "./Generated_Code/lpuart0.d" \
 "./Generated_Code/pin_mux.d" \
-
-OBJS += \
-./Generated_Code/Cpu.o \
-./Generated_Code/Flash.o \
-./Generated_Code/clockManager1.o \
-./Generated_Code/dmaController1.o \
-./Generated_Code/lpTmr1.o \
-./Generated_Code/lpit1.o \
-./Generated_Code/lpspi0_adc.o \
-./Generated_Code/lpspi2_dac.o \
-./Generated_Code/lpuart0.o \
-./Generated_Code/pin_mux.o \
 
 OBJS_QUOTED += \
 "./Generated_Code/Cpu.o" \
@@ -88,6 +64,30 @@ C_DEPS += \
 ./Generated_Code/lpspi2_dac.d \
 ./Generated_Code/lpuart0.d \
 ./Generated_Code/pin_mux.d \
+
+OBJS_OS_FORMAT += \
+./Generated_Code/Cpu.o \
+./Generated_Code/Flash.o \
+./Generated_Code/clockManager1.o \
+./Generated_Code/dmaController1.o \
+./Generated_Code/lpTmr1.o \
+./Generated_Code/lpit1.o \
+./Generated_Code/lpspi0_adc.o \
+./Generated_Code/lpspi2_dac.o \
+./Generated_Code/lpuart0.o \
+./Generated_Code/pin_mux.o \
+
+OBJS += \
+./Generated_Code/Cpu.o \
+./Generated_Code/Flash.o \
+./Generated_Code/clockManager1.o \
+./Generated_Code/dmaController1.o \
+./Generated_Code/lpTmr1.o \
+./Generated_Code/lpit1.o \
+./Generated_Code/lpspi0_adc.o \
+./Generated_Code/lpspi2_dac.o \
+./Generated_Code/lpuart0.o \
+./Generated_Code/pin_mux.o \
 
 
 # Each subdirectory must supply rules for building sources it contributes

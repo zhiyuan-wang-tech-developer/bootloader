@@ -43,7 +43,7 @@ flash_ssd_config_t flashSSDConfig;
 
 /* Prototypes */
 void uart_bluetooth_test(void);
-void flash_test_init(void);
+void flash_init(void);
 void program_flash_test(void);
 void eeprom_test(void);
 
@@ -81,7 +81,7 @@ int main(void)
 
 //    LPUART_DRV_SendDataPolling(INST_LPUART0, test_text, sizeof(test_text));
 
-    flash_test_init();
+    flash_init();
 
 
 
@@ -95,7 +95,7 @@ int main(void)
 
     for(;;)
     {
-    	PC2UART_receiver_run();
+    	PC2UART_receiver_run_test();
 //    	uart_bluetooth_test();
     }
 
@@ -128,7 +128,7 @@ void uart_bluetooth_test(void)
 	uart_status = LPUART_DRV_GetReceiveStatus(INST_LPUART0, &bytesReceived);
 	printf("rx: %c\n", rxData);
 	LPUART_DRV_SendDataPolling(INST_LPUART0, (uint8_t *)"\r\n", 2);	// new line
-//	LPUART_DRV_SendDataPolling(INST_LPUART0, &rxData, 1);
+
 	LPUART_DRV_SendData(INST_LPUART0, &rxData, 1);
 	while( STATUS_BUSY == LPUART_DRV_GetTransmitStatus(INST_LPUART0, &bytesTransmitted) );
 	uart_status = LPUART_DRV_GetTransmitStatus(INST_LPUART0, &bytesTransmitted);
@@ -136,7 +136,7 @@ void uart_bluetooth_test(void)
 	PINS_DRV_TogglePins(PTD, 1<<6);
 }
 
-void flash_test_init(void)
+void flash_init(void)
 {
 	status_t flash_status = 0;
     // Flash initialization
