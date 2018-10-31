@@ -223,19 +223,20 @@ void PC2UART_receiver_run_test(void)
 				isDataPacketCorrect = false;
 			}
 			PC2UART_ReceiverStatus = SEND_ACKNOWLEDGE_MSG;
-			printDataPacket(&rx_data_packet);
+//			printDataPacket(&rx_data_packet);
 			break;
 
 		case SEND_ACKNOWLEDGE_MSG:
 			if( isDataPacketCorrect )
 			{
+				printf("correct packet\r\n");
 				SendAcknowledge();
 //				LPUART_DRV_SendDataPolling(INST_LPUART0, (uint8_t *)ACKNOWLEDGE_MSG, strlen(ACKNOWLEDGE_MSG));
 			}
 			else
 			{
 				printf("incorrect packet\r\n");
-				calculateChecksum(&rx_data_packet);
+//				calculateChecksum(&rx_data_packet);
 				SendNoAcknowledge(ChecksumError);
 //				LPUART_DRV_SendDataPolling(INST_LPUART0, (uint8_t *)ERROR_MSG, strlen(ERROR_MSG));
 			}
@@ -298,6 +299,11 @@ bool parseDataPacket( DATA_PACKET_t * pDataPacket )
 	if( !isRxDataPacketCorrect(pDataPacket) )
 	{
 		return false;
+	}
+
+	if( pDataPacket->item.size == 5u )
+	{
+		printDataPacket(&rx_data_packet);
 	}
 	return true;
 }
