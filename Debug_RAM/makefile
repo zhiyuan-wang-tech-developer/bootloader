@@ -51,13 +51,13 @@ EXECUTABLES_OS_FORMAT += \
 AutoLivBootloader.elf \
 
 SECONDARY_FLASH += \
-AutoLivBootloader.bin \
+AutoLivBootloader.hex \
 
 SECONDARY_FLASH_QUOTED += \
-"AutoLivBootloader.bin" \
+"AutoLivBootloader.hex" \
 
 SECONDARY_FLASH_OS_FORMAT += \
-AutoLivBootloader.bin \
+AutoLivBootloader.hex \
 
 SECONDARY_SIZE += \
 AutoLivBootloader.siz \
@@ -81,10 +81,10 @@ AutoLivBootloader.elf: $(OBJS) D:/AllRound/Project/AutoLivBootloader/Project_Set
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-AutoLivBootloader.bin: $(EXECUTABLES)
+AutoLivBootloader.hex: $(EXECUTABLES)
 	@echo 'Executing target #39 $@'
 	@echo 'Invoking: Standard S32DS Create Flash Image'
-	arm-none-eabi-objcopy -O binary $(EXECUTABLES)  "AutoLivBootloader.bin"
+	arm-none-eabi-objcopy -O ihex $(EXECUTABLES)  "AutoLivBootloader.hex"
 	@echo 'Finished building: $@'
 	@echo ' '
 

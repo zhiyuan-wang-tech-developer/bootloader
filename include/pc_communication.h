@@ -25,10 +25,11 @@ typedef union
 	struct
 	{
 		uint8_t header;			// packet header = 0x55
-		uint8_t type;			// packet type / packet identifier 0..255
-		uint8_t size;			// packet size = total amount of bytes in a data packet
-		uint8_t raw_data[251];	// raw data payload
-		uint8_t checksum; 		// ( header + type + size + raw_data[0...] + checksum ) % 256 == 0
+		uint8_t type;			// packet type / packet identifier = 0..255
+		uint8_t size;			// packet size = total amount of bytes in a received data packet
+		uint8_t command;		// PC command field
+		uint8_t raw_data[250];	// raw data payload
+		uint8_t checksum; 		// (header + type + size + raw_data[0...] + checksum) % 256 == 0
 	} item;
 } DATA_PACKET_t;
 
@@ -92,9 +93,10 @@ typedef struct
 	uint8_t * pRingBuffer;
 } FIFO_RING_BUFFER_t;
 
-
+// Public global variable
 extern DATA_PACKET_t rx_data_packet;
 
+// Public function prototype
 void PC2UART_communication_init(void);
 void PC2UART_receiver_run_test(void);
 

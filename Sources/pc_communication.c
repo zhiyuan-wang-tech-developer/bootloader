@@ -19,8 +19,8 @@
 #define ACK_CODE	0x10u	// Acknowledge response data packet type
 #define ERR_CODE	0x11u	// No Acknowledge response data packet type
 
-// No acknowledge response data packet error info
-const uint8_t 	WriteFlashMemoryError 	= 120u;	// The writing of flash program memory has failed
+// The error info in no acknowledge response data packet
+const uint8_t 	WriteFlashMemoryError 	= 120u;		// The writing of flash program memory has failed
 const uint8_t	ChecksumError       	= 121u;
 const uint8_t	TimeoutError 			= 122u;
 
@@ -39,11 +39,11 @@ UART_RECEIVER_STATE_t PC2UART_ReceiverStatus = READY_FOR_DATA_RX;
 
 const uint8_t DataPacketHeader = 0x55u;
 const uint8_t DataPacketType_PutData = 0x0Bu;
-const uint8_t DataPacketSize = 68u; // 0x44u
+const uint8_t DataPacketSize = 69u; // 0x45u  The
 
 // Function declaration for internal use
 bool isRxDataPacketCorrect( DATA_PACKET_t * pDataPacket );
-bool parseDataPacket( DATA_PACKET_t * pDataPacket );
+bool checkDataPacket( DATA_PACKET_t * pDataPacket );
 void printDataPacket( DATA_PACKET_t * pDataPacket );
 void calculateChecksum( DATA_PACKET_t * pDataPacket );
 
@@ -214,7 +214,7 @@ void PC2UART_receiver_run_test(void)
 			break;
 
 		case CHECK_RX_DATA_PACKET:
-			if( parseDataPacket(&rx_data_packet) )
+			if( checkDataPacket(&rx_data_packet) )
 			{
 				isDataPacketCorrect = true;
 			}
@@ -272,12 +272,12 @@ bool isRxDataPacketCorrect( DATA_PACKET_t * pDataPacket )
 }
 
 /*
- * Parse the data packet contents
+ * Check the data packet contents
  * @parameter:	pointer to the data packet
  * @return:		true if the data packet is what we expect
  * 				false if the data packet is not what we expect
  */
-bool parseDataPacket( DATA_PACKET_t * pDataPacket )
+bool checkDataPacket( DATA_PACKET_t * pDataPacket )
 {
 	// Check data packet header
 	if( pDataPacket->item.header != DataPacketHeader )
@@ -300,7 +300,7 @@ bool parseDataPacket( DATA_PACKET_t * pDataPacket )
 	{
 		return false;
 	}
-
+	// To print the reset
 	if( pDataPacket->item.size == 5u )
 	{
 		printDataPacket(&rx_data_packet);
@@ -328,7 +328,7 @@ void calculateChecksum( DATA_PACKET_t * pDataPacket )
 		checksum += pDataPacket->buffer[i];
 	}
 	checksum = 256u - checksum;
-	printf("Correct checksum: %02x\r\n", checksum);
+	printf("Correct Checksum: %02x\r\n", checksum);
 }
 
 // Send Acknowledge back to the PC
@@ -439,6 +439,9 @@ void handleRxByte(void *driverState, uart_event_t event, void *userData)
 	if(event == UART_EVENT_RX_FULL)
 	{
 		rxByte = (uint8_t)LPUART0->DATA;
+		/*
+		 * Remove print function, otherwise the RX Overrun event will happen.
+		 */
 //		printf("call back rx: %c\r\n", rxByte);
 		FifoRingBuffer_PutByte(rxByte);
 	}

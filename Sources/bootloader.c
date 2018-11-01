@@ -9,6 +9,17 @@
 #include "pc_communication.h"
 #include "Cpu.h"
 #include "string.h"
+#include "stdio.h"
+
+
+/* Little-endianness to Big-endianness macro */
+/*
+ * After you read a word (32-bits) from flash,
+ * you must convert it from little-endianness to big-endianness.
+ *
+ */
+#define LE2BE_32(c)	(((c & 0xFF) << 24) | ((c & 0xFF00) << 8) | ((c & 0xFF0000) >> 8) | ((c & 0xFF000000) >> 24))
+
 
 // The size of one sector = 4096 bytes = 4KB
 #define FLASH_SECTOR_SIZE			(4096u) 					// FEATURE_FLS_PF_BLOCK_SECTOR_SIZE
@@ -38,11 +49,11 @@
 // The new firmware status is stored in EEEPROM
 #define NEW_FIRMWARE_STATUS_START_ADDRESS			(0x14000000u)
 #define NEW_FIRMWARE_STATUS_UPDATE_FLAG_ADDRESS 	(NEW_FIRMWARE_STATUS_START_ADDRESS)
-#define NEW_FIRMWARE_STATUS_SIZE_ADDRESS			(NEW_FIRMWARE_STATUS_START_ADDRESS + 1u)
-#define NEW_FIRMWARE_STATUS_CHECKSUM_ADDRESS		(NEW_FIRMWARE_STATUS_START_ADDRESS + 5u)
+#define NEW_FIRMWARE_STATUS_SIZE_ADDRESS			(NEW_FIRMWARE_STATUS_START_ADDRESS + 4u)
+#define NEW_FIRMWARE_STATUS_CHECKSUM_ADDRESS		(NEW_FIRMWARE_STATUS_START_ADDRESS + 8u)
 
 // Text for flash test
-uint8_t test_text[64] = "allround technology autoliv test....s32k144 firmware update test";
+uint8_t test_text[64] = "..allround technology autoliv test..s32k144 firmware update test";
 
 NEW_FIRMWARE_STATUS_t new_firmware_status =
 		{
@@ -69,6 +80,7 @@ flash_ssd_config_t flashSSDConfig;
 bool flash_writeBytes(uint32_t writeStartAddress, uint32_t writeByteNum, uint8_t * pBufferToWrite);
 uint8_t flash_readByte(uint32_t readAddress);
 void flash_load_write_buffer(void);
+void flash_write_buffer_little_endian_to_big_endian(void);
 bool flash_check_write_64bytes(void);
 
 void flash_auto_write_64bytes_reset(void);
@@ -85,6 +97,10 @@ bool isOldFirmwareCorrect(void);
 
 bool eeprom_read_new_firmware_status(void);
 bool eeprom_write_new_firmware_status(void);
+
+void JumpToExecute(uint32_t stack_pointer, uint32_t program_counter);
+
+void printOldFirmware(void);
 
 // Initialize both the program flash and the data flash
 bool flash_init(void)
@@ -265,6 +281,23 @@ void flash_load_write_buffer(void)
 }
 
 /*
+ * The write buffer has 64 bytes or 16 words (32-bits)
+ * Every word in the write buffer must be converted from little-endianness to big-endianness.
+ * After the little-endianness to big-endianness conversion,
+ * then you can write the contents in the write buffer to flash.
+ *
+ */
+void flash_write_buffer_little_endian_to_big_endian(void)
+{
+	uint32_t * write_buffer_word = (uint32_t *)flash_WriteBuffer;
+	uint8_t i = 0;
+	for(i = 0; i < 16; i++)
+	{
+		write_buffer_word[i] = LE2BE_32(write_buffer_word[i]);
+	}
+}
+
+/*
  * After  have been written to the flash memory from the flash write buffer,
  * read the 64 bytes into the flash read buffer,
  * then compare the flash read buffer and the flash write buffer.
@@ -327,6 +360,7 @@ bool flash_auto_write_64bytes(void)
 	flash_CurrentSectorIndex = flash_CurrentWrite64BytesStartAddress / FLASH_SECTOR_SIZE;
 	// Load the flash write buffer from the rx data packet prior to flash writing
 	flash_load_write_buffer();
+//	flash_write_buffer_little_endian_to_big_endian();
 	// Write the data block to the flash
 	retValue = flash_writeBytes(flash_CurrentWrite64BytesStartAddress, FLASH_WRITE_DATA_SIZE, flash_WriteBuffer);
 	if(retValue == false)
@@ -529,6 +563,7 @@ bool eeprom_write_new_firmware_status(void)
 
 void firmware_update_test(void)
 {
+	char InputChar = 'n';
 	bool retValue = false;
 	retValue = eeprom_read_new_firmware_status();
 	if(!retValue)
@@ -537,14 +572,21 @@ void firmware_update_test(void)
 	}
 	if(new_firmware_status.isNewFirmwareUpdated == 1u)
 	{
+		printf("Start new firmware update...\r\n");
 		// Copy new firmware to overwrite old firmware.
 		retValue = flash_overwrite_old_firmware();
 		if(!retValue)
 		{
 			return;
 		}
+		printf("End new firmware update...\r\n");
 		// After the new firmware is copied to overwrite the old firmware, clear the update flag.
 		new_firmware_status.isNewFirmwareUpdated = 0u;
+		printOldFirmware();
+	}
+	else
+	{
+		printf("No firmware updated.\r\n");
 	}
 	// Store the new firmware status into eeprom
 	retValue = eeprom_write_new_firmware_status();
@@ -553,34 +595,137 @@ void firmware_update_test(void)
 		return;
 	}
 
-	// Fill up raw data in the rx data packet with dummy data for test purpose.
-	memcpy(rx_data_packet.item.raw_data, test_text, sizeof(test_text));
-	// Start new firmware writing
-	uint8_t i = 0;
-	for(i = 0; i < 5; i++)
+	printf("Do you want to update new firmware? (y/n)\r\n");
+	InputChar = getchar();
+	if(InputChar == 'y')
 	{
-		retValue = flash_auto_write_64bytes();
+		// Fill up raw data in the rx data packet with dummy data for test purpose.
+		memcpy(rx_data_packet.item.raw_data, test_text, sizeof(test_text));
+		// Start new firmware writing
+		uint8_t i = 0;
+		for(i = 0; i < 3; i++)
+		{
+			retValue = flash_auto_write_64bytes();
+			if(!retValue)
+			{
+				printf("fail to write 64 bytes data %lu\r\n", flash_Write64BytesCount);
+				// fail in auto write
+				return;
+			}
+		}
+		// End new firmware writing
+		printf("Succeed in new firmware writing.\r\n");
+		// New firmware is updated
+		new_firmware_status.isNewFirmwareUpdated = 1u;
+		// Calculate the size of new firmware
+		new_firmware_status.newFirmwareSize = calculateNewFirmwareSize();
+		// Calculate the checksum of new firmware
+		uint32_t checksum = 0;
+		if(true == calculateNewFirmwareChecksum(&checksum))
+		{
+			new_firmware_status.newFirmwareChecksum = checksum;
+		}
+		// Store the new firmware status into eeprom for use in next restart.
+		retValue = eeprom_write_new_firmware_status();
 		if(!retValue)
 		{
-			// fail in auto write
 			return;
 		}
 	}
-	// End new firmware writing
-	// New firmware is updated
-	new_firmware_status.isNewFirmwareUpdated = 1u;
-	// Calculate the size of new firmware
-	new_firmware_status.newFirmwareSize = calculateNewFirmwareSize();
-	// Calculate the checksum of new firmware
-	uint32_t checksum = 0;
-	if(true == calculateNewFirmwareChecksum(&checksum))
-	{
-		new_firmware_status.newFirmwareChecksum = checksum;
-	}
-	// Store the new firmware status into eeprom
-	retValue = eeprom_write_new_firmware_status();
-	if(!retValue)
+//	auto_debug_reset();
+//	JumpToOldFirmware();
+}
+
+/*
+ * Used to jump to the entry point of the old firmware application
+ * The vector table of the old firmware application is located at 0x0000_4000 (old firmware start address)
+ *
+ */
+void JumpToOldFirmware(void)
+{
+	// Local variables
+	uint32_t * startAddress = (uint32_t *)OLD_FIRMWARE_START_ADDRESS;
+	uint32_t userStackPointer = 0u;
+	uint32_t userProgramCounter = 0u;
+	// Important: After you read a 32-bits word from flash, you must convert it from little-endian to big-endian...
+	// The first 32-bits word in the old firmware start address is loaded into stack pointer (SP)
+//	userStackPointer = LE2BE_32(startAddress[0]);
+	userStackPointer = startAddress[0];
+	// The second 32-bits word in the old firmware start address is loaded into program counter (PC)
+//	userProgramCounter = LE2BE_32(startAddress[1]);
+	userProgramCounter = startAddress[1];
+	/*
+	 * Check if the word in entry address is erased,
+	 * and return if erased.
+	 */
+	if(userStackPointer == 0xFFFFFFFF)
 	{
 		return;
+	}
+
+	/*
+	 *	Note:
+	 *
+	 * 	The 32-bit general-purpose registers for data operations: R0 ~ R12
+	 *
+	 * 	The Stack Pointer (SP) register: R13
+	 *		* MSP:	Main Stack Pointer. This is the reset value.
+	 *		* PSP:  Process Stack Pointer.
+	 *	On reset, the ARM core loads the MSP (Main Stack Pointer) with the value from start address 0x0000_4000.
+	 *
+	 *	The Program Counter (PC) register: R15.
+	 *	PC contains the current program address.
+	 *	On reset, the ARM core loads the PC with the value of the reset vector, which is at start address 0x0000_4004.
+	 *
+	 */
+
+	/* Relocate vector table in vector table offset register */
+	S32_SCB->VTOR = (uint32_t)startAddress;
+
+	JumpToExecute(userStackPointer, userProgramCounter);
+}
+
+/*
+ * Only for debug mode when s32k144 is running from RAM.
+ *
+ * SRAM start address = 0x1FFF_8000
+ */
+void auto_debug_reset(void)
+{
+	// Local variables
+	uint32_t *startAddress = (uint32_t *) 0x1FFF8000u;
+	uint32_t stackPointer = startAddress[0];
+	uint32_t programCounter = startAddress[1];
+
+	/* Relocate vector table in vector table offset register */
+	S32_SCB->VTOR = (uint32_t)startAddress;
+
+	JumpToExecute(stackPointer, programCounter);
+}
+
+void JumpToExecute(uint32_t stack_pointer, uint32_t program_counter)
+{
+	// r0 holds argument 0 stack_pointer
+	// r1 holds argument 1 program counter
+	/* Set up stack pointer (SP) */
+	__asm("msr msp, r0");
+//	__asm("msr psp, r0");
+	/* Program counter (PC) jumps to application start address (r1) */
+	__asm("mov pc, r1");
+}
+
+void printOldFirmware(void)
+{
+	uint8_t * startAddress = (uint8_t *) OLD_FIRMWARE_START_ADDRESS;
+	uint32_t i = 0;
+	printf("current firmware code:");
+	for(i = 0; i < new_firmware_status.newFirmwareSize; i++)
+	{
+		if( i%64 == 0 )
+		{
+			// Every 64 bytes are printed on each row.
+			printf("\r\n");
+		}
+		printf("%c ", startAddress[i]);
 	}
 }

@@ -18,7 +18,13 @@ typedef struct
 	uint32_t 	newFirmwareChecksum;
 } NEW_FIRMWARE_STATUS_t;
 
+// Public global variables
+extern NEW_FIRMWARE_STATUS_t new_firmware_status;
+
+// Public function prototypes
 bool flash_init(void);
+void JumpToOldFirmware(void);
+void auto_debug_reset(void);
 
 // For flash test purpose
 void program_flash_test(void);
