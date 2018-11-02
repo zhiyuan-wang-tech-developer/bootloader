@@ -73,12 +73,15 @@ typedef enum
 {
 	READY_FOR_DATA_RX,						// Check if UART RX Module is busy or not.
 	INITIATE_DATA_RX,						// Initiate UART RX process if the UART RX Module is not busy.
-	FIND_RX_DATA_PACKET_HEADER,				// Find Rx data packet header from UART RX Ring Buffer.
-	CHECK_RX_DATA_PACKET_TYPE,
-	CHECK_RX_DATA_PACKET_SIZE,
-	EXTRACT_RX_DATA_PACKET,
-	CHECK_RX_DATA_PACKET,					// Check the extracted data packet
-	SEND_ACKNOWLEDGE_MSG					// Send the acknowledge message to PC
+	FIND_RX_DATA_PACKET_HEADER,				// Find RX data packet header from UART RX Ring Buffer.
+	CHECK_RX_DATA_PACKET_TYPE,				// Check if the data packet type is put data type (0x0b).
+	CHECK_RX_DATA_PACKET_SIZE,				// Check the data packet size (69 Bytes or 5 Bytes).
+	CHECK_RX_DATA_PACKET_CMD,				// Check the PC command (Write flash or Reset).
+	EXTRACT_RX_DATA_PACKET,					// Extract the raw data and checksum.
+	CHECK_RX_DATA_PACKET,					// Check if the extracted data packet is correct and execute the PC command
+	WRITE_RPOGRAM_TO_FLASH,					// Execute PC command to write flash
+	SEND_ACKNOWLEDGE_MSG,					// Send the acknowledge message to PC after writing a data packet to flash
+	RESET_MCU,								// Execute PC command to reset MCU
 } UART_RECEIVER_STATE_t;
 
 /*

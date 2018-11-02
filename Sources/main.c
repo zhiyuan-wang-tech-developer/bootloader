@@ -77,8 +77,9 @@ int main(void)
 //    LPUART_DRV_SendDataPolling(INST_LPUART0, test_text, sizeof(test_text));
 
     flash_init();
-    firmware_update_test();
-    auto_debug_reset();
+    firmware_update();
+//    firmware_update_test();
+//    auto_debug_reset();
 
 //    printf("System is initialized!\n");
 

@@ -6,6 +6,7 @@
  */
 
 #include "pc_communication.h"
+#include "bootloader.h"
 #include "Cpu.h"
 #include "stdio.h"
 #include "string.h"
@@ -16,8 +17,14 @@
 #define ACKNOWLEDGE_MSG 	"Send acknowledge to PC! Checksum OK\r\n"
 #define ERROR_MSG			"Send error to PC! Checksum Wrong\r\n"
 
+// MCU to PC Acknowledge Data Packet Type
 #define ACK_CODE	0x10u	// Acknowledge response data packet type
 #define ERR_CODE	0x11u	// No Acknowledge response data packet type
+
+// PC to MCU data packet command code
+const uint8_t WriteFlashMemory = 0x01u;			// Write new program to MCU flash memory.
+const uint8_t ResetOK		= 0x02u;			// Reset the MCU and set the firmware update flag after writing firmware to flash is successful.
+const uint8_t ResetNotOK	= 0x03u;			// Reset the MCU and clear the firmware update flag after writing firmware to flash is unsuccessful.
 
 // The error info in no acknowledge response data packet
 const uint8_t 	WriteFlashMemoryError 	= 120u;		// The writing of flash program memory has failed
@@ -76,7 +83,7 @@ void PC2UART_receiver_run_test(void)
 {
 //	static status_t uart_rx_status = 0;
 	static uint32_t byteCount = 0;						// Count the number of data bytes that are read out of the ring buffer.
-//	static uint8_t byteTotalNum = 0;					// Total number of bytes in a data packet
+	static bool retValue = false;						// Return value
 	static bool isDataPacketCorrect = false;			// Indicate if the received data packet is expected data packet.
 	uint8_t rxByte = 0;
 
@@ -169,10 +176,10 @@ void PC2UART_receiver_run_test(void)
 				// FIFO Ring Buffer has at least one byte.
 				FifoRingBuffer_GetByte(&rxByte);
 				// Check RX data packet size.
-				if( (rxByte >= 4u) && (rxByte <= 255u) )
+				if( (rxByte >= 5u) && (rxByte <= 255u) )
 				{
-					// The data packet size is correct. Next to receive data payload.
-					PC2UART_ReceiverStatus = EXTRACT_RX_DATA_PACKET;
+					// The data packet size is correct. Next to receive command.
+					PC2UART_ReceiverStatus = CHECK_RX_DATA_PACKET_CMD;
 					rx_data_packet.item.size = rxByte;
 				}
 				else
@@ -183,23 +190,44 @@ void PC2UART_receiver_run_test(void)
 			}
 			break;
 
+		case CHECK_RX_DATA_PACKET_CMD:
+			if( FifoRingBuffer_IsEmpty() )
+			{
+				// No RX byte in the FIFO Ring Buffer.
+				// Wait until there is at least one RX byte.
+				PC2UART_ReceiverStatus = CHECK_RX_DATA_PACKET_CMD;
+			}
+			else
+			{
+				// FIFO Ring Buffer has at least one byte.
+				FifoRingBuffer_GetByte(&rxByte);
+				// Check RX data packet command.
+				if( (rxByte == WriteFlashMemory) ||
+					(rxByte == ResetOK) ||
+					(rxByte == ResetNotOK) )
+				{
+					// The data packet command is what we expect. Next to receive data payload and checksum.
+					PC2UART_ReceiverStatus = EXTRACT_RX_DATA_PACKET;
+					rx_data_packet.item.command = rxByte;
+				}
+				else
+				{
+					// The data packet command is not what we expect. Restart to find the header.
+					PC2UART_ReceiverStatus = FIND_RX_DATA_PACKET_HEADER;
+				}
+			}
+			break;
+
 		case EXTRACT_RX_DATA_PACKET:
-			if( FifoRingBuffer_IsEmpty() && (byteCount < (rx_data_packet.item.size - 3u)) )		// Now exclude the header, type and size
+			if( FifoRingBuffer_IsEmpty() && (byteCount < (rx_data_packet.item.size - 4u)) )		// Now ignore the header, type, size and command
 			{
 				PC2UART_ReceiverStatus = EXTRACT_RX_DATA_PACKET;
 			}
 			else
 			{
-				if( (byteCount >= 0u) && (byteCount < (rx_data_packet.item.size - 4u)) )
+				if( rx_data_packet.item.size == 5u )
 				{
-					// Read data payload
-					FifoRingBuffer_GetByte(&rxByte);
-					rx_data_packet.item.raw_data[byteCount++] = rxByte;
-					PC2UART_ReceiverStatus = EXTRACT_RX_DATA_PACKET;
-				}
-				else if( byteCount == (rx_data_packet.item.size - 4u) )
-				{
-					// Read checksum
+					// Directly read checksum
 					FifoRingBuffer_GetByte(&rxByte);
 					rx_data_packet.item.checksum = rxByte;
 					byteCount = 0;
@@ -207,13 +235,32 @@ void PC2UART_receiver_run_test(void)
 				}
 				else
 				{
-					// byteCount error and restart to find the header
-					PC2UART_ReceiverStatus = FIND_RX_DATA_PACKET_HEADER;
+					if( (byteCount >= 0u) && (byteCount < (rx_data_packet.item.size - 5u)) )  // ignore the header, type, size, command
+					{
+						// Read data payload
+						FifoRingBuffer_GetByte(&rxByte);
+						rx_data_packet.item.raw_data[byteCount++] = rxByte;
+						PC2UART_ReceiverStatus = EXTRACT_RX_DATA_PACKET;
+					}
+					else if( byteCount == (rx_data_packet.item.size - 5u) )
+					{
+						// Read checksum
+						FifoRingBuffer_GetByte(&rxByte);
+						rx_data_packet.item.checksum = rxByte;
+						byteCount = 0;
+						PC2UART_ReceiverStatus = CHECK_RX_DATA_PACKET;
+					}
+					else
+					{
+						// byteCount error and restart to find the header
+						PC2UART_ReceiverStatus = FIND_RX_DATA_PACKET_HEADER;
+					}
 				}
 			}
 			break;
 
 		case CHECK_RX_DATA_PACKET:
+			// Check checksum actually.
 			if( checkDataPacket(&rx_data_packet) )
 			{
 				isDataPacketCorrect = true;
@@ -222,25 +269,111 @@ void PC2UART_receiver_run_test(void)
 			{
 				isDataPacketCorrect = false;
 			}
-			PC2UART_ReceiverStatus = SEND_ACKNOWLEDGE_MSG;
-//			printDataPacket(&rx_data_packet);
-			break;
 
-		case SEND_ACKNOWLEDGE_MSG:
-			if( isDataPacketCorrect )
+//			printDataPacket(&rx_data_packet);
+			// Check command to execute
+			if( rx_data_packet.item.command == WriteFlashMemory )
 			{
-				printf("correct packet\r\n");
-				SendAcknowledge();
-//				LPUART_DRV_SendDataPolling(INST_LPUART0, (uint8_t *)ACKNOWLEDGE_MSG, strlen(ACKNOWLEDGE_MSG));
+				/*
+				 * No matter if the data packet is correct or not,
+				 * we always write it into flash memory.
+				 */
+				PC2UART_ReceiverStatus = WRITE_RPOGRAM_TO_FLASH;
+			}
+			else if( (rx_data_packet.item.command == ResetOK) ||
+					 (rx_data_packet.item.command == ResetNotOK) )
+			{
+				/*
+				 * All data packet transfer has been finished after the reset command is received.
+				 * You do not need to send acknowledge anymore.
+				 */
+				PC2UART_ReceiverStatus = RESET_MCU;
 			}
 			else
 			{
-				printf("incorrect packet\r\n");
+				// unrecognized PC command and restart to find the header
+				PC2UART_ReceiverStatus = FIND_RX_DATA_PACKET_HEADER;
+			}
+			break;
+
+		case WRITE_RPOGRAM_TO_FLASH:
+			retValue = flash_auto_write_64bytes();
+			PC2UART_ReceiverStatus = SEND_ACKNOWLEDGE_MSG;
+			break;
+
+		case SEND_ACKNOWLEDGE_MSG:
+			if( isDataPacketCorrect && retValue )
+			{
+				/*
+				 * The data packet checksum is correct and
+				 * successfully written into the flash memory.
+				 * Then, send OK acknowledge.
+				 */
+//				printf("Correct packet\r\n");
+//				LPUART_DRV_SendDataPolling(INST_LPUART0, (uint8_t *)ACKNOWLEDGE_MSG, strlen(ACKNOWLEDGE_MSG));
+				SendAcknowledge();
+			}
+			else if( (!isDataPacketCorrect) && retValue )
+			{
+				/*
+				 * The data packet checksum is not correct.
+				 * But, the data packet is successfully written into the flash memory.
+				 * Then, send checksum error acknowledge.
+				 */
+				printf("Wrong packet\r\n");
+//				LPUART_DRV_SendDataPolling(INST_LPUART0, (uint8_t *)ERROR_MSG, strlen(ERROR_MSG));
 //				calculateChecksum(&rx_data_packet);
 				SendNoAcknowledge(ChecksumError);
-//				LPUART_DRV_SendDataPolling(INST_LPUART0, (uint8_t *)ERROR_MSG, strlen(ERROR_MSG));
+			}
+			else
+			{
+				/*
+				 * reValue == false
+				 * If it is failed to write the data packet into the flash memory,
+				 * then send write flash memory error acknowledge.
+				 */
+				printf("Wrong flash write\r\n");
+				SendNoAcknowledge(WriteFlashMemoryError);
 			}
 			PC2UART_ReceiverStatus = FIND_RX_DATA_PACKET_HEADER;
+			break;
+
+		case RESET_MCU:
+			// All data packet transfer has ended.
+
+			// Calculate the size of the new firmware
+			new_firmware_status.newFirmwareSize = calculateNewFirmwareSize();
+
+			// Calculate the checksum of the new firmware
+			uint32_t checksum = 0;
+			if(true == calculateNewFirmwareChecksum(&checksum))
+			{
+				new_firmware_status.newFirmwareChecksum = checksum;
+			}
+
+			if(rx_data_packet.item.command == ResetOK)
+			{
+				// successful end of new firmware writing
+				printf("Success in new firmware writing!\r\n");
+				// New firmware is updated
+				new_firmware_status.isNewFirmwareUpdated = 1u;
+			}
+
+			if(rx_data_packet.item.command == ResetNotOK)
+			{
+				// failed end of new firmware writing
+				printf("Failure in new firmware writing!\r\n");
+				// New firmware is updated
+				new_firmware_status.isNewFirmwareUpdated = 0u;
+			}
+			// Store the new firmware status into EEPROM for use in next restart.
+			retValue = eeprom_write_new_firmware_status();
+
+			LPUART_DRV_Deinit(INST_LPUART0);
+			PC2UART_ReceiverStatus = READY_FOR_DATA_RX;
+
+			printf("System Reset...\r\n");
+			auto_debug_reset();
 			break;
 
 		default:
@@ -260,10 +393,11 @@ bool isRxDataPacketCorrect( DATA_PACKET_t * pDataPacket )
 {
 	uint8_t i = 0;
 	uint8_t sum = 0;
-	for(i = 0; i < sizeof(pDataPacket->buffer); i++)
+	for(i = 0; i < (pDataPacket->item.size - 1u); i++)
 	{
 		sum += pDataPacket->buffer[i];
 	}
+	sum += pDataPacket->item.checksum;
 	sum %= 256u;
 	if( sum == 0 )
 		return true;
@@ -284,27 +418,41 @@ bool checkDataPacket( DATA_PACKET_t * pDataPacket )
 	{
 		return false;
 	}
+
 	// Check data packet type
 	if( pDataPacket->item.type != DataPacketType_PutData )
 	{
 		return false;
 	}
+
 	// Check data size
-	// One data packet contains at least header, type, size, checksum.
-	if( pDataPacket->item.size < 4u )
+	// One data packet contains at least header, type, size, command and checksum.
+	if( pDataPacket->item.size < 5u )
 	{
 		return false;
 	}
+
+	// To print the reset command
+	if( pDataPacket->item.size == 5u )
+	{
+		printDataPacket(&rx_data_packet);
+	}
+
+	// Check PC command
+	if( (pDataPacket->item.command != WriteFlashMemory) &&
+		(pDataPacket->item.command != ResetOK) &&
+		(pDataPacket->item.command != ResetNotOK) )
+	{
+		// Unrecognized command
+		return false;
+	}
+
 	// Test the checksum
 	if( !isRxDataPacketCorrect(pDataPacket) )
 	{
 		return false;
 	}
-	// To print the reset
-	if( pDataPacket->item.size == 5u )
-	{
-		printDataPacket(&rx_data_packet);
-	}
+
 	return true;
 }
 

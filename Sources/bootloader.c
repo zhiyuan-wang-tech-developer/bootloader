@@ -83,20 +83,20 @@ void flash_load_write_buffer(void);
 void flash_write_buffer_little_endian_to_big_endian(void);
 bool flash_check_write_64bytes(void);
 
-void flash_auto_write_64bytes_reset(void);
-bool flash_auto_write_64bytes(void);
+//void flash_auto_write_64bytes_reset(void);
+//bool flash_auto_write_64bytes(void);
 bool flash_overwrite_old_firmware(void);
 
 bool flash_erase_sector(uint8_t sectorIndex);
 bool flash_erase_old_firmware(void);
 bool flash_erase_new_firmware(void);
 
-uint32_t calculateNewFirmwareSize(void);
-bool calculateNewFirmwareChecksum(uint32_t * pChecksum);
+//uint32_t calculateNewFirmwareSize(void);
+//bool calculateNewFirmwareChecksum(uint32_t * pChecksum);
 bool isOldFirmwareCorrect(void);
 
-bool eeprom_read_new_firmware_status(void);
-bool eeprom_write_new_firmware_status(void);
+//bool eeprom_read_new_firmware_status(void);
+//bool eeprom_write_new_firmware_status(void);
 
 void JumpToExecute(uint32_t stack_pointer, uint32_t program_counter);
 
@@ -248,7 +248,9 @@ bool flash_writeBytes(uint32_t writeStartAddress, uint32_t writeByteNum, uint8_t
 	}
 
 	// Write data to the flash
+	INT_SYS_DisableIRQGlobal();
 	flash_status = FLASH_DRV_Program(&flashSSDConfig, writeStartAddress, writeByteNum, pBufferToWrite);
+    INT_SYS_EnableIRQGlobal();
 	if( flash_status != STATUS_SUCCESS )
 	{
 		return false;
@@ -298,7 +300,7 @@ void flash_write_buffer_little_endian_to_big_endian(void)
 }
 
 /*
- * After  have been written to the flash memory from the flash write buffer,
+ * After 64-bytes data have been written to the flash memory from the flash write buffer,
  * read the 64 bytes into the flash read buffer,
  * then compare the flash read buffer and the flash write buffer.
  *
@@ -309,8 +311,9 @@ void flash_write_buffer_little_endian_to_big_endian(void)
 bool flash_check_write_64bytes(void)
 {
 	int retValue = 0;
-	memcpy(flash_ReadBuffer, (void *)flash_LastWrite64BytesStartAddress, 64);
-	retValue = memcmp(flash_ReadBuffer, flash_WriteBuffer, 64);
+	//Note: The memory copy sometimes failed, so suggest not to use it anymore.
+	memcpy(flash_ReadBuffer, (uint8_t *)flash_LastWrite64BytesStartAddress, 64u);
+	retValue = memcmp(flash_ReadBuffer, flash_WriteBuffer, 64u);
 	if( retValue == 0 )
 	{
 		// The data in both flash_ReadBuffer and flash_WriteBuffer are equal.
@@ -370,12 +373,14 @@ bool flash_auto_write_64bytes(void)
 	}
 	flash_LastWrite64BytesStartAddress = flash_CurrentWrite64BytesStartAddress;
 	// Check if the flash write is successful
-	retValue = flash_check_write_64bytes();
-	if(retValue == false)
-	{
-		// Mismatch in flash writing data
-		return false;
-	}
+	// Program check has been done in flash_writeBytes().
+	// Memory copy function in flash_check_write_64bytes() may fail, suggest not to use it.
+	//	retValue = flash_check_write_64bytes();
+	//	if(retValue == false)
+	//	{
+	//		// Mismatch in flash writing data
+	//		return false;
+	//	}
 	flash_Write64BytesCount++;
 	// Flash writing success
 	return true;
@@ -400,12 +405,18 @@ bool flash_overwrite_old_firmware(void)
 	// Get new firmware size in bytes
 	firmwareSize = new_firmware_status.newFirmwareSize;
 	// Start to copy new firmware to old firmware area
+	// Critical section where all interrupts are forbiden.
+	INT_SYS_DisableIRQGlobal();
 	flash_status = FLASH_DRV_Program(&flashSSDConfig, OLD_FIRMWARE_START_ADDRESS, firmwareSize, (uint8_t *)NEW_FIRMWARE_START_ADDRESS);
+	INT_SYS_EnableIRQGlobal();
 	if( flash_status != STATUS_SUCCESS )
 	{
 		return false;
 	}
+	// Critical section where all interrupts are forbiden.
+	INT_SYS_DisableIRQGlobal();
 	flash_status = FLASH_DRV_ProgramCheck(&flashSSDConfig, OLD_FIRMWARE_START_ADDRESS, firmwareSize, (uint8_t *)NEW_FIRMWARE_START_ADDRESS, &failAddress, 0x01);
+	INT_SYS_EnableIRQGlobal();
 	if( flash_status != STATUS_SUCCESS )
 	{
 		return false;
@@ -431,7 +442,10 @@ bool flash_erase_sector(uint8_t sectorIndex)
 		return false;
 	}
 	flash_ErasedSectorStartAddress = sectorIndex * FLASH_SECTOR_SIZE;
+	// Critical section where all interrupts are forbiden.
+	INT_SYS_DisableIRQGlobal();
 	flash_status = FLASH_DRV_EraseSector(&flashSSDConfig, flash_ErasedSectorStartAddress, FLASH_SECTOR_SIZE);
+	INT_SYS_EnableIRQGlobal();
 	if( flash_status != STATUS_SUCCESS )
 	{
 		return false;
@@ -540,21 +554,33 @@ bool eeprom_read_new_firmware_status(void)
 bool eeprom_write_new_firmware_status(void)
 {
 	status_t eeprom_status = STATUS_SUCCESS;
+
 	// Write new firmware update flag
+	// Critical section where all interrupts are forbiden.
+	INT_SYS_DisableIRQGlobal();
     eeprom_status = FLASH_DRV_EEEWrite(&flashSSDConfig, NEW_FIRMWARE_STATUS_UPDATE_FLAG_ADDRESS, sizeof(uint8_t), (uint8_t *)&new_firmware_status.isNewFirmwareUpdated);
-	if( eeprom_status != STATUS_SUCCESS )
+    INT_SYS_EnableIRQGlobal();
+    if( eeprom_status != STATUS_SUCCESS )
 	{
 		return false;
 	}
+
 	// Write new firmware size
+	// Critical section where all interrupts are forbiden.
+	INT_SYS_DisableIRQGlobal();
     eeprom_status = FLASH_DRV_EEEWrite(&flashSSDConfig, NEW_FIRMWARE_STATUS_SIZE_ADDRESS, sizeof(uint32_t), (uint8_t *)&new_firmware_status.newFirmwareSize);
-	if( eeprom_status != STATUS_SUCCESS )
+    INT_SYS_EnableIRQGlobal();
+    if( eeprom_status != STATUS_SUCCESS )
 	{
 		return false;
 	}
+
 	// Write new firmware checksum
+	// Critical section where all interrupts are forbiden.
+	INT_SYS_DisableIRQGlobal();
     eeprom_status = FLASH_DRV_EEEWrite(&flashSSDConfig, NEW_FIRMWARE_STATUS_CHECKSUM_ADDRESS, sizeof(uint32_t), (uint8_t *)&new_firmware_status.newFirmwareChecksum);
-	if( eeprom_status != STATUS_SUCCESS )
+    INT_SYS_EnableIRQGlobal();
+    if( eeprom_status != STATUS_SUCCESS )
 	{
 		return false;
 	}
@@ -565,11 +591,13 @@ void firmware_update_test(void)
 {
 	char InputChar = 'n';
 	bool retValue = false;
+
 	retValue = eeprom_read_new_firmware_status();
 	if(!retValue)
 	{
 		return;
 	}
+
 	if(new_firmware_status.isNewFirmwareUpdated == 1u)
 	{
 		printf("Start new firmware update...\r\n");
@@ -580,22 +608,26 @@ void firmware_update_test(void)
 			return;
 		}
 		printf("End new firmware update...\r\n");
+
 		// After the new firmware is copied to overwrite the old firmware, clear the update flag.
 		new_firmware_status.isNewFirmwareUpdated = 0u;
+
+		// Store the new firmware status into EEPROM
+		retValue = eeprom_write_new_firmware_status();
+		if(!retValue)
+		{
+			return;
+		}
+
 		printOldFirmware();
 	}
 	else
 	{
 		printf("No firmware updated.\r\n");
 	}
-	// Store the new firmware status into eeprom
-	retValue = eeprom_write_new_firmware_status();
-	if(!retValue)
-	{
-		return;
-	}
 
 	printf("Do you want to update new firmware? (y/n)\r\n");
+	fflush(stdin);
 	InputChar = getchar();
 	if(InputChar == 'y')
 	{
@@ -603,12 +635,12 @@ void firmware_update_test(void)
 		memcpy(rx_data_packet.item.raw_data, test_text, sizeof(test_text));
 		// Start new firmware writing
 		uint8_t i = 0;
-		for(i = 0; i < 3; i++)
+		for(i = 0; i < 7; i++)
 		{
 			retValue = flash_auto_write_64bytes();
 			if(!retValue)
 			{
-				printf("fail to write 64 bytes data %lu\r\n", flash_Write64BytesCount);
+				printf("fail to write 64 bytes data: %lu\r\n", flash_Write64BytesCount + 1);
 				// fail in auto write
 				return;
 			}
@@ -625,7 +657,7 @@ void firmware_update_test(void)
 		{
 			new_firmware_status.newFirmwareChecksum = checksum;
 		}
-		// Store the new firmware status into eeprom for use in next restart.
+		// Store the new firmware status into EEPROM for use in next restart.
 		retValue = eeprom_write_new_firmware_status();
 		if(!retValue)
 		{
@@ -634,6 +666,47 @@ void firmware_update_test(void)
 	}
 //	auto_debug_reset();
 //	JumpToOldFirmware();
+}
+
+void firmware_update(void)
+{
+	bool retValue = false;
+
+	retValue = eeprom_read_new_firmware_status();
+	if(!retValue)
+	{
+		printf("Fail to read EEPROM!\r\n");
+	}
+
+	if(new_firmware_status.isNewFirmwareUpdated == 1u)
+	{
+		printf("Start new firmware updating...\r\n");
+		// Copy new firmware to overwrite old firmware.
+		retValue = flash_overwrite_old_firmware();
+		if(!retValue)
+		{
+			printf("Failure in new firmware updating...!\r\n");
+		}
+		printf("End new firmware updating...\r\n");
+
+		// After the new firmware is copied to overwrite the old firmware, clear the update flag.
+		new_firmware_status.isNewFirmwareUpdated = 0u;
+
+		// Store the new firmware status into EEPROM
+		retValue = eeprom_write_new_firmware_status();
+		if(!retValue)
+		{
+			printf("Failure to write EEPROM!\r\n");
+		}
+		printf("Jump to old firmware\r\n");
+		JumpToOldFirmware();
+//		auto_debug_reset();
+	}
+	else
+	{
+		printf("No firmware updated.\r\n");
+//		JumpToOldFirmware();
+	}
 }
 
 /*
@@ -718,7 +791,7 @@ void printOldFirmware(void)
 {
 	uint8_t * startAddress = (uint8_t *) OLD_FIRMWARE_START_ADDRESS;
 	uint32_t i = 0;
-	printf("current firmware code:");
+	printf("Current firmware to execute:");
 	for(i = 0; i < new_firmware_status.newFirmwareSize; i++)
 	{
 		if( i%64 == 0 )
@@ -728,4 +801,5 @@ void printOldFirmware(void)
 		}
 		printf("%c ", startAddress[i]);
 	}
+	printf("\r\n");
 }
