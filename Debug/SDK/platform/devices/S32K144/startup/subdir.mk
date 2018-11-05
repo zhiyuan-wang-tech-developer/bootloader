@@ -11,20 +11,20 @@ C_SRCS_QUOTED += \
 C_SRCS += \
 ../SDK/platform/devices/S32K144/startup/system_S32K144.c \
 
-OBJS_OS_FORMAT += \
-./SDK/platform/devices/S32K144/startup/system_S32K144.o \
-
 C_DEPS_QUOTED += \
 "./SDK/platform/devices/S32K144/startup/system_S32K144.d" \
-
-OBJS += \
-./SDK/platform/devices/S32K144/startup/system_S32K144.o \
 
 OBJS_QUOTED += \
 "./SDK/platform/devices/S32K144/startup/system_S32K144.o" \
 
 C_DEPS += \
 ./SDK/platform/devices/S32K144/startup/system_S32K144.d \
+
+OBJS_OS_FORMAT += \
+./SDK/platform/devices/S32K144/startup/system_S32K144.o \
+
+OBJS += \
+./SDK/platform/devices/S32K144/startup/system_S32K144.o \
 
 
 # Each subdirectory must supply rules for building sources it contributes

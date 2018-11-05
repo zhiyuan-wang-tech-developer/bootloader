@@ -44,6 +44,9 @@ FIFO_RING_BUFFER_t uart_rx_ring_buffer = {
 
 UART_RECEIVER_STATE_t PC2UART_ReceiverStatus = READY_FOR_DATA_RX;
 
+// The flag to indicate if the firmware is being downloaded.
+bool isFirmwareDownloading = false;
+
 const uint8_t DataPacketHeader = 0x55u;
 const uint8_t DataPacketType_PutData = 0x0Bu;
 const uint8_t DataPacketSize = 69u; // 0x45u  The
@@ -83,7 +86,7 @@ void PC2UART_receiver_run_test(void)
 {
 //	static status_t uart_rx_status = 0;
 	static uint32_t byteCount = 0;						// Count the number of data bytes that are read out of the ring buffer.
-	static bool retValue = false;						// Return value
+	static bool isWriteSuccessful = false;				// Return value to indicate if the write operation is successful.
 	static bool isDataPacketCorrect = false;			// Indicate if the received data packet is expected data packet.
 	uint8_t rxByte = 0;
 
@@ -209,6 +212,11 @@ void PC2UART_receiver_run_test(void)
 					// The data packet command is what we expect. Next to receive data payload and checksum.
 					PC2UART_ReceiverStatus = EXTRACT_RX_DATA_PACKET;
 					rx_data_packet.item.command = rxByte;
+					// Set the flag to indicate that the firmware is being downloaded.
+					if(isFirmwareDownloading == false)
+					{
+						isFirmwareDownloading = true;
+					}
 				}
 				else
 				{
@@ -287,7 +295,7 @@ void PC2UART_receiver_run_test(void)
 				 * All data packet transfer has been finished after the reset command is received.
 				 * You do not need to send acknowledge anymore.
 				 */
-				PC2UART_ReceiverStatus = RESET_MCU;
+				PC2UART_ReceiverStatus = UPDATE_FIRMWARE_STATUS;
 			}
 			else
 			{
@@ -297,12 +305,12 @@ void PC2UART_receiver_run_test(void)
 			break;
 
 		case WRITE_RPOGRAM_TO_FLASH:
-			retValue = flash_auto_write_64bytes();
+			isWriteSuccessful = flash_auto_write_64bytes();
 			PC2UART_ReceiverStatus = SEND_ACKNOWLEDGE_MSG;
 			break;
 
 		case SEND_ACKNOWLEDGE_MSG:
-			if( isDataPacketCorrect && retValue )
+			if( isDataPacketCorrect && isWriteSuccessful )
 			{
 				/*
 				 * The data packet checksum is correct and
@@ -313,14 +321,14 @@ void PC2UART_receiver_run_test(void)
 //				LPUART_DRV_SendDataPolling(INST_LPUART0, (uint8_t *)ACKNOWLEDGE_MSG, strlen(ACKNOWLEDGE_MSG));
 				SendAcknowledge();
 			}
-			else if( (!isDataPacketCorrect) && retValue )
+			else if( (!isDataPacketCorrect) && isWriteSuccessful )
 			{
 				/*
 				 * The data packet checksum is not correct.
 				 * But, the data packet is successfully written into the flash memory.
 				 * Then, send checksum error acknowledge.
 				 */
-				printf("Wrong packet\r\n");
+				printf("Error: rx data packet\r\n");
 //				LPUART_DRV_SendDataPolling(INST_LPUART0, (uint8_t *)ERROR_MSG, strlen(ERROR_MSG));
 //				calculateChecksum(&rx_data_packet);
 				SendNoAcknowledge(ChecksumError);
@@ -332,48 +340,58 @@ void PC2UART_receiver_run_test(void)
 				 * If it is failed to write the data packet into the flash memory,
 				 * then send write flash memory error acknowledge.
 				 */
-				printf("Wrong flash write\r\n");
+				printf("Error: flash write\r\n");
 				SendNoAcknowledge(WriteFlashMemoryError);
 			}
 			PC2UART_ReceiverStatus = FIND_RX_DATA_PACKET_HEADER;
 			break;
 
-		case RESET_MCU:
+		case UPDATE_FIRMWARE_STATUS:
 			// All data packet transfer has ended.
 
-			// Calculate the size of the new firmware
+			// Calculate the size of the new firmware.
 			new_firmware_status.newFirmwareSize = calculateNewFirmwareSize();
 
-			// Calculate the checksum of the new firmware
+			// Calculate the checksum of the new firmware.
 			uint32_t checksum = 0;
 			if(true == calculateNewFirmwareChecksum(&checksum))
 			{
 				new_firmware_status.newFirmwareChecksum = checksum;
 			}
 
+			// Set the firmware update flag
 			if(rx_data_packet.item.command == ResetOK)
 			{
-				// successful end of new firmware writing
-				printf("Success in new firmware writing!\r\n");
+				// Successful in new firmware downloading.
+				printf("Success in new firmware download!\r\n");
 				// New firmware is updated
 				new_firmware_status.isNewFirmwareUpdated = 1u;
 			}
 
 			if(rx_data_packet.item.command == ResetNotOK)
 			{
-				// failed end of new firmware writing
-				printf("Failure in new firmware writing!\r\n");
-				// New firmware is updated
+				// Failed in new firmware downloading.
+				printf("Failure in new firmware download!\r\n");
+				// New firmware is not updated
 				new_firmware_status.isNewFirmwareUpdated = 0u;
 			}
+
 			// Store the new firmware status into EEPROM for use in next restart.
-			retValue = eeprom_write_new_firmware_status();
+			isWriteSuccessful = eeprom_write_new_firmware_status();
 
+			PC2UART_ReceiverStatus = RESET_MCU;
+			break;
+
+		case RESET_MCU:
+			// Disable UART module
 			LPUART_DRV_Deinit(INST_LPUART0);
+			// Clear the flag to indicate that the firmware download has ended.
+			isFirmwareDownloading = false;
+			// Reset the PC to UART receiver status
 			PC2UART_ReceiverStatus = READY_FOR_DATA_RX;
-
 			printf("System Reset...\r\n");
-			auto_debug_reset();
+			auto_ram_reset();
+//			auto_flash_reset();
 			break;
 
 		default:

@@ -11,20 +11,20 @@ C_SRCS_QUOTED += \
 C_SRCS += \
 ../SDK/platform/drivers/src/clock/clock_manager.c \
 
-OBJS_OS_FORMAT += \
-./SDK/platform/drivers/src/clock/clock_manager.o \
-
 C_DEPS_QUOTED += \
 "./SDK/platform/drivers/src/clock/clock_manager.d" \
-
-OBJS += \
-./SDK/platform/drivers/src/clock/clock_manager.o \
 
 OBJS_QUOTED += \
 "./SDK/platform/drivers/src/clock/clock_manager.o" \
 
 C_DEPS += \
 ./SDK/platform/drivers/src/clock/clock_manager.d \
+
+OBJS_OS_FORMAT += \
+./SDK/platform/drivers/src/clock/clock_manager.o \
+
+OBJS += \
+./SDK/platform/drivers/src/clock/clock_manager.o \
 
 
 # Each subdirectory must supply rules for building sources it contributes

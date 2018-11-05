@@ -11,20 +11,20 @@ C_SRCS_QUOTED += \
 C_SRCS += \
 ../SDK/rtos/osif/osif_baremetal.c \
 
-OBJS_OS_FORMAT += \
-./SDK/rtos/osif/osif_baremetal.o \
-
 C_DEPS_QUOTED += \
 "./SDK/rtos/osif/osif_baremetal.d" \
-
-OBJS += \
-./SDK/rtos/osif/osif_baremetal.o \
 
 OBJS_QUOTED += \
 "./SDK/rtos/osif/osif_baremetal.o" \
 
 C_DEPS += \
 ./SDK/rtos/osif/osif_baremetal.d \
+
+OBJS_OS_FORMAT += \
+./SDK/rtos/osif/osif_baremetal.o \
+
+OBJS += \
+./SDK/rtos/osif/osif_baremetal.o \
 
 
 # Each subdirectory must supply rules for building sources it contributes

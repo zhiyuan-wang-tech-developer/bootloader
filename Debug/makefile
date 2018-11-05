@@ -50,6 +50,15 @@ EXECUTABLES_QUOTED += \
 EXECUTABLES_OS_FORMAT += \
 AutoLivBootloader.elf \
 
+SECONDARY_FLASH += \
+AutoLivBootloader.hex \
+
+SECONDARY_FLASH_QUOTED += \
+"AutoLivBootloader.hex" \
+
+SECONDARY_FLASH_OS_FORMAT += \
+AutoLivBootloader.hex \
+
 SECONDARY_SIZE += \
 AutoLivBootloader.siz \
 
@@ -72,8 +81,15 @@ AutoLivBootloader.elf: $(OBJS) D:/AllRound/Project/AutoLivBootloader/Project_Set
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-AutoLivBootloader.siz: $(EXECUTABLES)
+AutoLivBootloader.hex: $(EXECUTABLES)
 	@echo 'Executing target #39 $@'
+	@echo 'Invoking: Standard S32DS Create Flash Image'
+	arm-none-eabi-objcopy -O ihex $(EXECUTABLES)  "AutoLivBootloader.hex"
+	@echo 'Finished building: $@'
+	@echo ' '
+
+AutoLivBootloader.siz: $(EXECUTABLES)
+	@echo 'Executing target #40 $@'
 	@echo 'Invoking: Standard S32DS Print Size'
 	arm-none-eabi-size --format=berkeley $(EXECUTABLES)
 	@echo 'Finished building: $@'
@@ -81,10 +97,10 @@ AutoLivBootloader.siz: $(EXECUTABLES)
 
 # Other Targets
 clean:
-	-$(RM) ./*/*.d ./*/*/*/*.d ./*/*/*/*/*/*.d ./*/*/*/*/*/*/*.d  ./*/*.o ./*/*/*/*.o ./*/*/*/*/*/*.o ./*/*/*/*/*/*/*.o ./*/*/*.o  $(SECONDARY_SIZE_QUOTED) $(EXECUTABLES_QUOTED)
+	-$(RM) $(SECONDARY_FLASH_QUOTED) ./*/*.d ./*/*/*/*.d ./*/*/*/*/*/*.d ./*/*/*/*/*/*/*.d  ./*/*.o ./*/*/*/*.o ./*/*/*/*/*/*.o ./*/*/*/*/*/*/*.o ./*/*/*.o  $(SECONDARY_SIZE_QUOTED) $(EXECUTABLES_QUOTED)
 	-@echo ' '
 
-secondary-outputs: $(SECONDARY_SIZE)
+secondary-outputs: $(SECONDARY_FLASH) $(SECONDARY_SIZE)
 
 .PHONY: all clean dependents explicit-dependencies warning-messages
 .SECONDARY:

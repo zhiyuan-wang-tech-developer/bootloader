@@ -78,10 +78,11 @@ typedef enum
 	CHECK_RX_DATA_PACKET_SIZE,				// Check the data packet size (69 Bytes or 5 Bytes).
 	CHECK_RX_DATA_PACKET_CMD,				// Check the PC command (Write flash or Reset).
 	EXTRACT_RX_DATA_PACKET,					// Extract the raw data and checksum.
-	CHECK_RX_DATA_PACKET,					// Check if the extracted data packet is correct and execute the PC command
-	WRITE_RPOGRAM_TO_FLASH,					// Execute PC command to write flash
-	SEND_ACKNOWLEDGE_MSG,					// Send the acknowledge message to PC after writing a data packet to flash
-	RESET_MCU,								// Execute PC command to reset MCU
+	CHECK_RX_DATA_PACKET,					// Check if the extracted data packet is correct and execute the PC command.
+	WRITE_RPOGRAM_TO_FLASH,					// Execute PC command to write flash.
+	SEND_ACKNOWLEDGE_MSG,					// Send the acknowledge message to PC after writing a data packet to flash.
+	UPDATE_FIRMWARE_STATUS,					// End the data packet download and flash write, update the firmware status.
+	RESET_MCU,								// Execute PC command to reset MCU.
 } UART_RECEIVER_STATE_t;
 
 /*
@@ -98,6 +99,7 @@ typedef struct
 
 // Public global variable
 extern DATA_PACKET_t rx_data_packet;
+extern bool isFirmwareDownloading;
 
 // Public function prototype
 void PC2UART_communication_init(void);

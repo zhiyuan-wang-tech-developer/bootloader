@@ -36,7 +36,6 @@ uint8_t delete_text[16] = {0xFF};
 
 uint8_t uart_rx_data;
 
-
 /* User includes (#include below this line is not maintained by Processor Expert) */
 
 /* Prototypes */
@@ -77,7 +76,9 @@ int main(void)
 //    LPUART_DRV_SendDataPolling(INST_LPUART0, test_text, sizeof(test_text));
 
     flash_init();
+
     firmware_update();
+
 //    firmware_update_test();
 //    auto_debug_reset();
 
@@ -91,6 +92,17 @@ int main(void)
 
 	for(;;)
 	{
+		/*
+		 * If the firmware is being downloaded, the tasks within the brackets are not executed any more.
+		 */
+		if( !isFirmwareDownloading )
+		{
+			/*
+			 * Now the firmware is not being downloaded,  other tasks can be running.
+			 *
+			 */
+			PINS_DRV_TogglePins(PTD, 1<<6);
+		}
 		PC2UART_receiver_run_test();
 	//    	uart_bluetooth_test();
 	}

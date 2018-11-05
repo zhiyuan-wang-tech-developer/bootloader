@@ -8,6 +8,7 @@
 #ifndef BOOTLOADER_H_
 #define BOOTLOADER_H_
 
+#include "flash_driver.h"
 #include "stdbool.h"
 #include "stdint.h"
 
@@ -21,6 +22,8 @@ typedef struct
 // Public global variables
 extern NEW_FIRMWARE_STATUS_t new_firmware_status;
 
+extern flash_ssd_config_t flashSSDConfig;
+
 // Public function prototypes
 bool flash_init(void);
 
@@ -28,7 +31,8 @@ void flash_auto_write_64bytes_reset(void);
 bool flash_auto_write_64bytes(void);
 
 void JumpToOldFirmware(void);
-void auto_debug_reset(void);
+void auto_ram_reset(void);
+void auto_flash_reset(void);
 
 bool eeprom_read_new_firmware_status(void);
 bool eeprom_write_new_firmware_status(void);

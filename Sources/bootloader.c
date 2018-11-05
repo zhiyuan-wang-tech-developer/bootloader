@@ -28,23 +28,24 @@
 #define FLASH_WRITE_DATA_SIZE		(64u)
 
 /*
- * The bootloader is stored at the sector 0...3 in the address range (0x0000_0000 ~ 0x0000_3FFF)
- * The bootloader maximum code size = 4 * 4096 = 16384 = 16KB
+ * The bootloader is stored at the sector 0...11 in the address range (0x0000_0000 ~ 0x0000_BFFF)
+ * The bootloader maximum code size = 12 * 4096 = 49152 = 48KB
  *
- * The old firmware is stored at the sector 4...65 in the address range (0x0000_4000 ~ 0x0004_1FFF)
- * The old firmware maximum code size = 62 * 4096 = 253952 = 248KB
+ * The old firmware is stored at the sector 12...69 in the address range (0x0000_C000 ~ 0x0004_5FFF)
+ * The old firmware maximum code size = 58 * 4096 = 237568 = 232KB
  *
- * The new firmware is stored at the sector 66...127 in the address range (0x0004_2000 ~ 0x0007_FFFF)
- * The new firmware maximum code size = 62 * 4096 = 253952 = 248KB
+ * The new firmware is stored at the sector 70...127 in the address range (0x0004_6000 ~ 0x0007_FFFF)
+ * The new firmware maximum code size = 58 * 4096 = 237568 = 232KB
  */
-#define OLD_FIRMWARE_START_ADDRESS		(0x00004000u)
-#define OLD_FIRMWARE_START_SECTOR		(4u)
-#define OLD_FIRMWARE_END_SECTOR			(65u)
-#define OLD_FIRMWARE_MAX_SIZE			(253952u)
-#define NEW_FIRMWARE_START_ADDRESS		(0x00042000u)
-#define NEW_FIRMWARE_START_SECTOR		(66u)
+#define OLD_FIRMWARE_START_ADDRESS		(0x0000C000u)
+#define OLD_FIRMWARE_START_SECTOR		(12u)
+#define OLD_FIRMWARE_END_SECTOR			(69u)
+#define OLD_FIRMWARE_MAX_SIZE			(237568u)
+
+#define NEW_FIRMWARE_START_ADDRESS		(0x00046000u)
+#define NEW_FIRMWARE_START_SECTOR		(70u)
 #define NEW_FIRMWARE_END_SECTOR			(127u)
-#define NEW_FIRMWARE_MAX_SIZE			(253952u)
+#define NEW_FIRMWARE_MAX_SIZE			(237568u)
 
 // The new firmware status is stored in EEEPROM
 #define NEW_FIRMWARE_STATUS_START_ADDRESS			(0x14000000u)
@@ -670,6 +671,7 @@ void firmware_update_test(void)
 
 void firmware_update(void)
 {
+//    FLASH_DRV_EraseAllBlock(&flashSSDConfig);
 	bool retValue = false;
 
 	retValue = eeprom_read_new_firmware_status();
@@ -685,7 +687,7 @@ void firmware_update(void)
 		retValue = flash_overwrite_old_firmware();
 		if(!retValue)
 		{
-			printf("Failure in new firmware updating...!\r\n");
+			printf("Failure in new firmware copying...!\r\n");
 		}
 		printf("End new firmware updating...\r\n");
 
@@ -698,14 +700,16 @@ void firmware_update(void)
 		{
 			printf("Failure to write EEPROM!\r\n");
 		}
-		printf("Jump to old firmware\r\n");
-		JumpToOldFirmware();
-//		auto_debug_reset();
+//		JumpToOldFirmware();
+		printf("Auto reset\r\n");
+		auto_ram_reset();
+//		auto_flash_reset();
 	}
 	else
 	{
-		printf("No firmware updated.\r\n");
-//		JumpToOldFirmware();
+		printf("No firmware updated\r\n");
+		printf("Jump to old firmware\r\n");
+		JumpToOldFirmware();
 	}
 }
 
@@ -736,6 +740,18 @@ void JumpToOldFirmware(void)
 		return;
 	}
 
+	if(userStackPointer != 0x20007000)
+	{
+		// The stack pointer must point to the top of stack, that is, the buttom of SRAM_U.
+		return;
+	}
+
+	if(userProgramCounter != (OLD_FIRMWARE_START_ADDRESS + 0x00000411))
+	{
+		// The program counter must point to the reset handler entry address (firmware start address + offset).
+		return;
+	}
+
 	/*
 	 *	Note:
 	 *
@@ -763,7 +779,7 @@ void JumpToOldFirmware(void)
  *
  * SRAM start address = 0x1FFF_8000
  */
-void auto_debug_reset(void)
+void auto_ram_reset(void)
 {
 	// Local variables
 	uint32_t *startAddress = (uint32_t *) 0x1FFF8000u;
@@ -776,10 +792,28 @@ void auto_debug_reset(void)
 	JumpToExecute(stackPointer, programCounter);
 }
 
+/*
+ * Only used when s32k144 is running from FLASH.
+ *
+ * Bootloader start address = 0x0000_0000
+ */
+void auto_flash_reset(void)
+{
+	// Local variables
+	uint32_t *startAddress = (uint32_t *) 0x00000000u;
+	uint32_t stackPointer = startAddress[0];
+	uint32_t programCounter = startAddress[1];
+
+	/* Relocate vector table in vector table offset register */
+	S32_SCB->VTOR = (uint32_t)startAddress;
+
+	JumpToExecute(stackPointer, programCounter);
+}
+
 void JumpToExecute(uint32_t stack_pointer, uint32_t program_counter)
 {
-	// r0 holds argument 0 stack_pointer
-	// r1 holds argument 1 program counter
+	// Register r0 holds argument 0 stack_pointer
+	// Register r1 holds argument 1 program counter
 	/* Set up stack pointer (SP) */
 	__asm("msr msp, r0");
 //	__asm("msr psp, r0");

@@ -203,5 +203,5 @@
 </listAttribute>
 <stringAttribute key="org.eclipse.dsf.launch.MEMORY_BLOCKS" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#13;&#10;&lt;memoryBlockExpressionList context=&quot;reserved-for-future-use&quot;&gt;&#13;&#10;&lt;gdbmemoryBlockExpression address=&quot;335544320&quot; label=&quot;0x14000000&quot;/&gt;&#13;&#10;&lt;gdbmemoryBlockExpression address=&quot;536838144&quot; label=&quot;0x1FFF8000&quot;/&gt;&#13;&#10;&lt;/memoryBlockExpressionList&gt;&#13;&#10;"/>
 <stringAttribute key="process_factory_id" value="org.eclipse.cdt.dsf.gdb.GdbProcessFactory"/>
-<stringAttribute key="saved_expressions&lt;seperator&gt;Unknown" value="0x0005F100,0x0005F000,0x0005F04C,0x0005F098,0x0005F058,0x0005F090,0x14000000,0x1000000,0x10000000,0x00000000,0xe30,0x42000,0x4000,0x0000,0x1fff8000"/>
+<stringAttribute key="saved_expressions&lt;seperator&gt;Unknown" value="0x4000],0x8840,0x46840,0x200019e8,0x0,0x00004000,0x00042000,0,0xC000,0xC411,0x46000,0xc000,0xC400,0x1fff8000,0x0000"/>
 </launchConfiguration>

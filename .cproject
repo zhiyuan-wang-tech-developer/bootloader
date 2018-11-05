@@ -26,6 +26,7 @@
 							<option id="com.freescale.s32ds.cross.gnu.arm.cortexm.option.target.libraries.1761155789" name="Libraries support" superClass="com.freescale.s32ds.cross.gnu.arm.cortexm.option.target.libraries" value="com.freescale.s32ds.cross.gnu.arm.cortexm.option.target.libraries.ewl_c9x_hosted" valueType="enumerated"/>
 							<option id="com.freescale.s32ds.cross.gnu.arm.cortexm.option.target.sysroot.1129047103" name="Sysroot" superClass="com.freescale.s32ds.cross.gnu.arm.cortexm.option.target.sysroot" value="--sysroot=&quot;${ARM_EWL_DIR}&quot;" valueType="string"/>
 							<option id="com.freescale.s32ds.cross.gnu.arm.cortexm.option.target.mcpu.1990418679" name="ARM family" superClass="com.freescale.s32ds.cross.gnu.arm.cortexm.option.target.mcpu" value="com.freescale.s32ds.cross.gnu.arm.cortexm.option.target.mcpu.cortex-m4" valueType="enumerated"/>
+							<option id="com.freescale.s32ds.cross.gnu.arm.cortexm.option.addtools.createflash.2122365568" name="Create flash image" superClass="com.freescale.s32ds.cross.gnu.arm.cortexm.option.addtools.createflash" value="true" valueType="boolean"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.673178864" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
 							<builder buildPath="${workspace_loc:/AutoLivBootloader}/Debug" id="com.freescale.s32ds.cross.gnu.builder.2138502805" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="FSL Make Builder" superClass="com.freescale.s32ds.cross.gnu.builder"/>
 							<tool id="com.freescale.s32ds.cross.gnu.arm.cortexm.tool.c.compiler.903766477" name="Standard S32DS C Compiler" superClass="com.freescale.s32ds.cross.gnu.arm.cortexm.tool.c.compiler">
@@ -221,7 +222,9 @@
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.655846103" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 								<inputType id="com.freescale.s32ds.cross.gnu.tool.assembler.inputType.asmfile.1363446231" superClass="com.freescale.s32ds.cross.gnu.tool.assembler.inputType.asmfile"/>
 							</tool>
-							<tool id="com.freescale.s32ds.cross.gnu.arm.cortexm.tool.createflash.202513281" name="Standard S32DS Create Flash Image" superClass="com.freescale.s32ds.cross.gnu.arm.cortexm.tool.createflash"/>
+							<tool id="com.freescale.s32ds.cross.gnu.arm.cortexm.tool.createflash.202513281" name="Standard S32DS Create Flash Image" superClass="com.freescale.s32ds.cross.gnu.arm.cortexm.tool.createflash">
+								<option id="com.freescale.s32ds.cross.gnu.option.createflash.choice.1278771476" superClass="com.freescale.s32ds.cross.gnu.option.createflash.choice" useByScannerDiscovery="false" value="com.freescale.s32ds.cross.gnu.option.createflash.choice.ihex" valueType="enumerated"/>
+							</tool>
 							<tool id="com.freescale.s32ds.cross.gnu.arm.cortexm.tool.createlisting.131287566" name="Standard S32DS Create Listing" superClass="com.freescale.s32ds.cross.gnu.arm.cortexm.tool.createlisting">
 								<option id="com.freescale.s32ds.cross.gnu.option.createlisting.source.1073320637" name="Display source (--source|-S)" superClass="com.freescale.s32ds.cross.gnu.option.createlisting.source" value="true" valueType="boolean"/>
 								<option id="com.freescale.s32ds.cross.gnu.option.createlisting.allheaders.2037597818" name="Display all headers (--all-headers|-x)" superClass="com.freescale.s32ds.cross.gnu.option.createlisting.allheaders" value="true" valueType="boolean"/>
@@ -276,6 +279,7 @@
 							<option id="com.freescale.s32ds.cross.gnu.arm.cortexm.option.target.libraries.957757347" name="Libraries support" superClass="com.freescale.s32ds.cross.gnu.arm.cortexm.option.target.libraries" value="com.freescale.s32ds.cross.gnu.arm.cortexm.option.target.libraries.ewl_c9x_hosted" valueType="enumerated"/>
 							<option id="com.freescale.s32ds.cross.gnu.arm.cortexm.option.target.sysroot.1906730638" name="Sysroot" superClass="com.freescale.s32ds.cross.gnu.arm.cortexm.option.target.sysroot" value="--sysroot=&quot;${ARM_EWL_DIR}&quot;" valueType="string"/>
 							<option id="com.freescale.s32ds.cross.gnu.arm.cortexm.option.target.mcpu.685344263" name="ARM family" superClass="com.freescale.s32ds.cross.gnu.arm.cortexm.option.target.mcpu" value="com.freescale.s32ds.cross.gnu.arm.cortexm.option.target.mcpu.cortex-m4" valueType="enumerated"/>
+							<option id="com.freescale.s32ds.cross.gnu.arm.cortexm.option.addtools.createflash.1855745014" name="Create flash image" superClass="com.freescale.s32ds.cross.gnu.arm.cortexm.option.addtools.createflash" value="true" valueType="boolean"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.135607154" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
 							<builder buildPath="${workspace_loc:/AutoLivBootloader}/Release" id="com.freescale.s32ds.cross.gnu.builder.148813017" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="FSL Make Builder" superClass="com.freescale.s32ds.cross.gnu.builder"/>
 							<tool id="com.freescale.s32ds.cross.gnu.arm.cortexm.tool.c.compiler.825117807" name="Standard S32DS C Compiler" superClass="com.freescale.s32ds.cross.gnu.arm.cortexm.tool.c.compiler">
@@ -471,7 +475,9 @@
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1612078324" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 								<inputType id="com.freescale.s32ds.cross.gnu.tool.assembler.inputType.asmfile.1373696308" superClass="com.freescale.s32ds.cross.gnu.tool.assembler.inputType.asmfile"/>
 							</tool>
-							<tool id="com.freescale.s32ds.cross.gnu.arm.cortexm.tool.createflash.1083290651" name="Standard S32DS Create Flash Image" superClass="com.freescale.s32ds.cross.gnu.arm.cortexm.tool.createflash"/>
+							<tool id="com.freescale.s32ds.cross.gnu.arm.cortexm.tool.createflash.1083290651" name="Standard S32DS Create Flash Image" superClass="com.freescale.s32ds.cross.gnu.arm.cortexm.tool.createflash">
+								<option id="com.freescale.s32ds.cross.gnu.option.createflash.choice.2118513495" name="Output file format (-O)" superClass="com.freescale.s32ds.cross.gnu.option.createflash.choice" useByScannerDiscovery="false" value="com.freescale.s32ds.cross.gnu.option.createflash.choice.ihex" valueType="enumerated"/>
+							</tool>
 							<tool id="com.freescale.s32ds.cross.gnu.arm.cortexm.tool.createlisting.655368926" name="Standard S32DS Create Listing" superClass="com.freescale.s32ds.cross.gnu.arm.cortexm.tool.createlisting">
 								<option id="com.freescale.s32ds.cross.gnu.option.createlisting.source.812313574" name="Display source (--source|-S)" superClass="com.freescale.s32ds.cross.gnu.option.createlisting.source" value="true" valueType="boolean"/>
 								<option id="com.freescale.s32ds.cross.gnu.option.createlisting.allheaders.1157088681" name="Display all headers (--all-headers|-x)" superClass="com.freescale.s32ds.cross.gnu.option.createlisting.allheaders" value="true" valueType="boolean"/>
@@ -487,7 +493,6 @@
 							<tool id="com.freescale.s32ds.cross.gnu.disassembler.547583908" name="Standard S32DS Disassembler" superClass="com.freescale.s32ds.cross.gnu.disassembler"/>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="com.freescale.s32ds.cross.gnu.arm.cortexm.exe.release.1033163070.Project_Settings/Debugger/AutoLivBootloader_Debug.launch" name="AutoLivBootloader_Debug.launch" rcbsApplicability="disable" resourcePath="Project_Settings/Debugger/AutoLivBootloader_Debug.launch" toolsToInvoke=""/>
 					<fileInfo id="com.freescale.s32ds.cross.gnu.arm.cortexm.exe.release.1033163070.Project_Settings/Debugger/AutoLivBootloader_Debug_RAM.launch" name="AutoLivBootloader_Debug_RAM.launch" rcbsApplicability="disable" resourcePath="Project_Settings/Debugger/AutoLivBootloader_Debug_RAM.launch" toolsToInvoke=""/>
 					<fileInfo id="com.freescale.s32ds.cross.gnu.arm.cortexm.exe.release.1033163070.Project_Settings/Linker_Files" name="Linker_Files" rcbsApplicability="disable" resourcePath="Project_Settings/Linker_Files" toolsToInvoke=""/>
 					<sourceEntries>
@@ -742,7 +747,6 @@
 							<tool id="com.freescale.s32ds.cross.gnu.disassembler.1614042085" name="Standard S32DS Disassembler" superClass="com.freescale.s32ds.cross.gnu.disassembler"/>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="com.freescale.s32ds.cross.gnu.arm.cortexm.exe.Debug_RAM.Project_Settings/Debugger/AutoLivBootloader_Debug.launch" name="AutoLivBootloader_Debug.launch" rcbsApplicability="disable" resourcePath="Project_Settings/Debugger/AutoLivBootloader_Debug.launch" toolsToInvoke=""/>
 					<fileInfo id="com.freescale.s32ds.cross.gnu.arm.cortexm.exe.Debug_RAM.Project_Settings/Debugger/AutoLivBootloader_Release.launch" name="AutoLivBootloader_Release.launch" rcbsApplicability="disable" resourcePath="Project_Settings/Debugger/AutoLivBootloader_Release.launch" toolsToInvoke=""/>
 					<fileInfo id="com.freescale.s32ds.cross.gnu.arm.cortexm.exe.Debug_RAM.Project_Settings/Linker_Files" name="Linker_Files" rcbsApplicability="disable" resourcePath="Project_Settings/Linker_Files" toolsToInvoke=""/>
 					<sourceEntries>

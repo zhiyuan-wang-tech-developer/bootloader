@@ -11,20 +11,20 @@ C_SRCS_QUOTED += \
 C_SRCS += \
 ../SDK/platform/devices/startup.c \
 
-OBJS_OS_FORMAT += \
-./SDK/platform/devices/startup.o \
-
 C_DEPS_QUOTED += \
 "./SDK/platform/devices/startup.d" \
-
-OBJS += \
-./SDK/platform/devices/startup.o \
 
 OBJS_QUOTED += \
 "./SDK/platform/devices/startup.o" \
 
 C_DEPS += \
 ./SDK/platform/devices/startup.d \
+
+OBJS_OS_FORMAT += \
+./SDK/platform/devices/startup.o \
+
+OBJS += \
+./SDK/platform/devices/startup.o \
 
 
 # Each subdirectory must supply rules for building sources it contributes
