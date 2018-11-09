@@ -6,6 +6,8 @@
 <stringAttribute key="com.pemicro.debug.gdbjtag.pne.PE.GDB_OPTIONS" value=""/>
 <intAttribute key="com.pemicro.debug.gdbjtag.pne.PE.HARDWARE_INTERFACE" value="0"/>
 <stringAttribute key="com.pemicro.debug.gdbjtag.pne.PE.LAST_ATTRIBUTE_HEADER" value="com.pemicro.debug.gdbjtag.pne.ml."/>
+<booleanAttribute key="com.pemicro.debug.gdbjtag.pne.PE.STREAMING_ENABLE_PORT1" value="true"/>
+<stringAttribute key="com.pemicro.debug.gdbjtag.pne.PE.STREAMING_SERVER_PORT1" value="8080"/>
 <booleanAttribute key="com.pemicro.debug.gdbjtag.pne.PE.USE_EXTERNAL_SERVER" value="true"/>
 <intAttribute key="com.pemicro.debug.gdbjtag.pne.algorithmIndex" value="0"/>
 <stringAttribute key="com.pemicro.debug.gdbjtag.pne.alternativeAlgorithmPath" value=""/>
@@ -62,7 +64,7 @@
 <booleanAttribute key="com.pemicro.debug.gdbjtag.pne.doContinue" value="true"/>
 <booleanAttribute key="com.pemicro.debug.gdbjtag.pne.doGdbServerAllocateSemihostingConsole" value="true"/>
 <booleanAttribute key="com.pemicro.debug.gdbjtag.pne.doPartitioning" value="false"/>
-<booleanAttribute key="com.pemicro.debug.gdbjtag.pne.enableSemihosting" value="true"/>
+<booleanAttribute key="com.pemicro.debug.gdbjtag.pne.enableSemihosting" value="false"/>
 <booleanAttribute key="com.pemicro.debug.gdbjtag.pne.enableSemihostingIoclientGdbClient" value="false"/>
 <booleanAttribute key="com.pemicro.debug.gdbjtag.pne.enableSemihostingIoclientTelnet" value="true"/>
 <intAttribute key="com.pemicro.debug.gdbjtag.pne.eraseOptionIndex" value="0"/>

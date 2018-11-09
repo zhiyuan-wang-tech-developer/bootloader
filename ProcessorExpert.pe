@@ -3,7 +3,7 @@
   <Header>
     <Name>AutoLivBootloader</Name>
     <SavedBy>dynatron2018</SavedBy>
-    <ModificationStamp>38</ModificationStamp>
+    <ModificationStamp>39</ModificationStamp>
     <Date>2018-10-09</Date>
     <IDE>Eclipse IDE</IDE>
     <PEversion>1.12.2.RT7_b1743-0713</PEversion>
@@ -1107,7 +1107,7 @@
   <Configuration>
     <CompNumb>5</CompNumb>
     <NodeName>RAM</NodeName>
-    <CnfgEnabled>false</CnfgEnabled>
+    <CnfgEnabled>true</CnfgEnabled>
     <TargetCPU>6</TargetCPU>
     <ConfigurationComment lines_count="0" />
     <BoolList_FpgaConfig>

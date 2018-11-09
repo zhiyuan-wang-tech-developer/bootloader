@@ -53,7 +53,7 @@ MEMORY
 
   m_interrupts          (RX)  : ORIGIN = 0x00000000, LENGTH = 0x00000400
   m_flash_config        (RX)  : ORIGIN = 0x00000400, LENGTH = 0x00000010
-  m_text                (RX)  : ORIGIN = 0x00000410, LENGTH = 0x0007FBF0
+  m_text                (RX)  : ORIGIN = 0x00000410, LENGTH = 0x0000BBF0
 
   /* SRAM_L */
   m_data                (RW)  : ORIGIN = 0x1FFF8000, LENGTH = 0x00008000

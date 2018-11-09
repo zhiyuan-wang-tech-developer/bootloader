@@ -20,6 +20,8 @@
  */
 #define LE2BE_32(c)	(((c & 0xFF) << 24) | ((c & 0xFF00) << 8) | ((c & 0xFF0000) >> 8) | ((c & 0xFF000000) >> 24))
 
+#define LED_OFF		PINS_DRV_ClearPins(PTE, 1<<8)
+#define LED_ON		PINS_DRV_SetPins(PTE, 1<<8)
 
 // The size of one sector = 4096 bytes = 4KB
 #define FLASH_SECTOR_SIZE			(4096u) 					// FEATURE_FLS_PF_BLOCK_SECTOR_SIZE
@@ -243,7 +245,7 @@ bool flash_writeBytes(uint32_t writeStartAddress, uint32_t writeByteNum, uint8_t
 		return false;
 	}
 
-	if(pBufferToWrite == NULL)
+	if( pBufferToWrite == NULL )
 	{
 		return false;
 	}
@@ -677,19 +679,23 @@ void firmware_update(void)
 	retValue = eeprom_read_new_firmware_status();
 	if(!retValue)
 	{
-		printf("Fail to read EEPROM!\r\n");
+//		printf("Fail to read EEPROM!\r\n");
+		retValue = eeprom_read_new_firmware_status();
 	}
 
 	if(new_firmware_status.isNewFirmwareUpdated == 1u)
 	{
-		printf("Start new firmware updating...\r\n");
+
+//		printf("Start new firmware updating...\r\n");
 		// Copy new firmware to overwrite old firmware.
 		retValue = flash_overwrite_old_firmware();
 		if(!retValue)
 		{
-			printf("Failure in new firmware copying...!\r\n");
+//			printf("Failure in new firmware copying...!\r\n");
+			// Copy new firmware again if the previous copy failed.
+			retValue = flash_overwrite_old_firmware();
 		}
-		printf("End new firmware updating...\r\n");
+//		printf("End new firmware updating...\r\n");
 
 		// After the new firmware is copied to overwrite the old firmware, clear the update flag.
 		new_firmware_status.isNewFirmwareUpdated = 0u;
@@ -698,24 +704,29 @@ void firmware_update(void)
 		retValue = eeprom_write_new_firmware_status();
 		if(!retValue)
 		{
-			printf("Failure to write EEPROM!\r\n");
+//			printf("Failure to write EEPROM!\r\n");
+			retValue = eeprom_write_new_firmware_status();
 		}
 //		JumpToOldFirmware();
-		printf("Auto reset\r\n");
-		auto_ram_reset();
-//		auto_flash_reset();
+//		printf("Auto reset\r\n");
+//		auto_ram_reset();
+		auto_flash_reset();
 	}
 	else
 	{
-		printf("No firmware updated\r\n");
-		printf("Jump to old firmware\r\n");
+//		printf("No firmware updated\r\n");
+//		printf("Jump to old firmware\r\n");
+		/*
+		 * If there exists an old firmware, jump to the old firmware and this function will never return.
+		 * If no old firmware exists, this function will return.
+		 */
 		JumpToOldFirmware();
 	}
 }
 
 /*
- * Used to jump to the entry point of the old firmware application
- * The vector table of the old firmware application is located at 0x0000_4000 (old firmware start address)
+ * @brief: Used to jump to the entry point of the old firmware application
+ * 		   The vector table of the old firmware application is located at 0x0000_C000 (old firmware start address)
  *
  */
 void JumpToOldFirmware(void)
@@ -724,29 +735,34 @@ void JumpToOldFirmware(void)
 	uint32_t * startAddress = (uint32_t *)OLD_FIRMWARE_START_ADDRESS;
 	uint32_t userStackPointer = 0u;
 	uint32_t userProgramCounter = 0u;
+
 	// Important: After you read a 32-bits word from flash, you must convert it from little-endian to big-endian...
 	// The first 32-bits word in the old firmware start address is loaded into stack pointer (SP)
 //	userStackPointer = LE2BE_32(startAddress[0]);
-	userStackPointer = startAddress[0];
 	// The second 32-bits word in the old firmware start address is loaded into program counter (PC)
 //	userProgramCounter = LE2BE_32(startAddress[1]);
+
+	userStackPointer = startAddress[0];
 	userProgramCounter = startAddress[1];
 	/*
 	 * Check if the word in entry address is erased,
 	 * and return if erased.
 	 */
-	if(userStackPointer == 0xFFFFFFFF)
+	if( userStackPointer == 0xFFFFFFFF )
 	{
 		return;
 	}
 
-	if(userStackPointer != 0x20007000)
+	if( userStackPointer != 0x20007000 )
 	{
 		// The stack pointer must point to the top of stack, that is, the buttom of SRAM_U.
 		return;
 	}
 
-	if(userProgramCounter != (OLD_FIRMWARE_START_ADDRESS + 0x00000411))
+	/*
+	 * PC offset = 0x411
+	 */
+	if( userProgramCounter != (OLD_FIRMWARE_START_ADDRESS + 0x00000411) )
 	{
 		// The program counter must point to the reset handler entry address (firmware start address + offset).
 		return;

@@ -41,7 +41,7 @@
 -I"D:/AllRound/Project/AutoLivBootloader/Sources"
 -x assembler-with-cpp
 -DSTART_FROM_FLASH
--O3
+-O0
 -mcpu=cortex-m4
 -mthumb
 -specs=ewl_c9x_hosted.specs

@@ -77,6 +77,10 @@ int main(void)
 
     flash_init();
 
+    /*
+     * If there is an old firmware, this function will not return.
+     * If there is no old firmware, this function will return.
+     */
     firmware_update();
 
 //    firmware_update_test();
@@ -89,7 +93,10 @@ int main(void)
 
 //    SystemSoftwareReset();
 
-
+    /*
+     * If there is no old firmware, the MCU will run the PC to UART receiver
+     * to wait for new firmware downloading from the PC.
+     */
 	for(;;)
 	{
 		/*
@@ -101,9 +108,9 @@ int main(void)
 			 * Now the firmware is not being downloaded,  other tasks can be running.
 			 *
 			 */
-			PINS_DRV_TogglePins(PTD, 1<<6);
+//			PINS_DRV_TogglePins(PTD, 1<<6);
 		}
-		PC2UART_receiver_run_test();
+		PC2UART_receiver_run();
 	//    	uart_bluetooth_test();
 	}
 

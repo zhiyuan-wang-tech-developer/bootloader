@@ -103,6 +103,6 @@ extern bool isFirmwareDownloading;
 
 // Public function prototype
 void PC2UART_communication_init(void);
-void PC2UART_receiver_run_test(void);
+void PC2UART_receiver_run(void);
 
 #endif /* PC_COMMUNICATION_H_ */

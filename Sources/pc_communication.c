@@ -14,12 +14,15 @@
 #define UART_RX_RING_BUFFER_SIZE	256
 
 // Acknowledge message
-#define ACKNOWLEDGE_MSG 	"Send acknowledge to PC! Checksum OK\r\n"
-#define ERROR_MSG			"Send error to PC! Checksum Wrong\r\n"
+//#define ACKNOWLEDGE_MSG 	"Send acknowledge to PC! Checksum OK\r\n"
+//#define ERROR_MSG			"Send error to PC! Checksum Wrong\r\n"
 
 // MCU to PC Acknowledge Data Packet Type
 #define ACK_CODE	0x10u	// Acknowledge response data packet type
 #define ERR_CODE	0x11u	// No Acknowledge response data packet type
+
+#define LED_OFF		PINS_DRV_ClearPins(PTE, 1<<8)
+#define LED_ON		PINS_DRV_SetPins(PTE, 1<<8)
 
 // PC to MCU data packet command code
 const uint8_t WriteFlashMemory = 0x01u;			// Write new program to MCU flash memory.
@@ -82,7 +85,7 @@ void PC2UART_communication_init(void)
 /*
  * Run PC to s32k144 MCU UART rx communication state machine
  */
-void PC2UART_receiver_run_test(void)
+void PC2UART_receiver_run(void)
 {
 //	static status_t uart_rx_status = 0;
 	static uint32_t byteCount = 0;						// Count the number of data bytes that are read out of the ring buffer.
@@ -103,6 +106,8 @@ void PC2UART_receiver_run_test(void)
 			{
 				// UART RX module is not busy now. START data reception!
 				PC2UART_ReceiverStatus = INITIATE_DATA_RX;
+				// Make sure LED off.
+				LED_OFF;
 			}
 			break;
 
@@ -216,6 +221,8 @@ void PC2UART_receiver_run_test(void)
 					if(isFirmwareDownloading == false)
 					{
 						isFirmwareDownloading = true;
+						// Turn LED on to indicate the firmware download in progress.
+						LED_ON;
 					}
 				}
 				else
@@ -328,7 +335,7 @@ void PC2UART_receiver_run_test(void)
 				 * But, the data packet is successfully written into the flash memory.
 				 * Then, send checksum error acknowledge.
 				 */
-				printf("Error: rx data packet\r\n");
+//				printf("Error: rx data packet\r\n");
 //				LPUART_DRV_SendDataPolling(INST_LPUART0, (uint8_t *)ERROR_MSG, strlen(ERROR_MSG));
 //				calculateChecksum(&rx_data_packet);
 				SendNoAcknowledge(ChecksumError);
@@ -340,7 +347,7 @@ void PC2UART_receiver_run_test(void)
 				 * If it is failed to write the data packet into the flash memory,
 				 * then send write flash memory error acknowledge.
 				 */
-				printf("Error: flash write\r\n");
+//				printf("Error: flash write\r\n");
 				SendNoAcknowledge(WriteFlashMemoryError);
 			}
 			PC2UART_ReceiverStatus = FIND_RX_DATA_PACKET_HEADER;
@@ -363,7 +370,7 @@ void PC2UART_receiver_run_test(void)
 			if(rx_data_packet.item.command == ResetOK)
 			{
 				// Successful in new firmware downloading.
-				printf("Success in new firmware download!\r\n");
+//				printf("Success in new firmware download!\r\n");
 				// New firmware is updated
 				new_firmware_status.isNewFirmwareUpdated = 1u;
 			}
@@ -371,7 +378,7 @@ void PC2UART_receiver_run_test(void)
 			if(rx_data_packet.item.command == ResetNotOK)
 			{
 				// Failed in new firmware downloading.
-				printf("Failure in new firmware download!\r\n");
+//				printf("Failure in new firmware download!\r\n");
 				// New firmware is not updated
 				new_firmware_status.isNewFirmwareUpdated = 0u;
 			}
@@ -387,11 +394,13 @@ void PC2UART_receiver_run_test(void)
 			LPUART_DRV_Deinit(INST_LPUART0);
 			// Clear the flag to indicate that the firmware download has ended.
 			isFirmwareDownloading = false;
+			// Turn off LED to indicate the end of the firmware downloading.
+			LED_OFF;
 			// Reset the PC to UART receiver status
 			PC2UART_ReceiverStatus = READY_FOR_DATA_RX;
-			printf("System Reset...\r\n");
-			auto_ram_reset();
-//			auto_flash_reset();
+//			printf("System Reset...\r\n");
+//			auto_ram_reset();
+			auto_flash_reset();
 			break;
 
 		default:
