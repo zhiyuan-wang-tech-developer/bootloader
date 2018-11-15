@@ -2,7 +2,7 @@
 # Automatically-generated file. Do not edit!
 ################################################################################
 
-#Progress monitor hint: 37
+#Progress monitor hint: 30
 first : all
 -include ../makefile.init
 
@@ -24,7 +24,6 @@ RM := rm -rf
 -include SDK/platform/drivers/src/flash/subdir.mk
 -include SDK/platform/drivers/src/interrupt/subdir.mk
 -include SDK/platform/drivers/src/lpit/subdir.mk
--include SDK/platform/drivers/src/lpspi/subdir.mk
 -include SDK/platform/drivers/src/lptmr/subdir.mk
 -include SDK/platform/drivers/src/lpuart/subdir.mk
 -include SDK/platform/drivers/src/pins/subdir.mk
@@ -75,21 +74,21 @@ all: warning-messages explicit-dependencies AutoLivBootloader.elf secondary-outp
 # Tool invocations
 AutoLivBootloader.elf: $(OBJS) D:/AllRound/Project/AutoLivBootloader/Project_Settings/Linker_Files/S32K144_64_flash.ld $(USER_OBJS)
 	@echo 'Building target: $@'
-	@echo 'Executing target #38 $@'
+	@echo 'Executing target #31 $@'
 	@echo 'Invoking: Standard S32DS C Linker'
 	arm-none-eabi-gcc -o "AutoLivBootloader.elf" "@AutoLivBootloader.args"  $(USER_OBJS_QUOTED) $(LIBS_QUOTED)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 AutoLivBootloader.hex: $(EXECUTABLES)
-	@echo 'Executing target #39 $@'
+	@echo 'Executing target #32 $@'
 	@echo 'Invoking: Standard S32DS Create Flash Image'
 	arm-none-eabi-objcopy -O ihex $(EXECUTABLES)  "AutoLivBootloader.hex"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 AutoLivBootloader.siz: $(EXECUTABLES)
-	@echo 'Executing target #40 $@'
+	@echo 'Executing target #33 $@'
 	@echo 'Invoking: Standard S32DS Print Size'
 	arm-none-eabi-size --format=berkeley $(EXECUTABLES)
 	@echo 'Finished building: $@'

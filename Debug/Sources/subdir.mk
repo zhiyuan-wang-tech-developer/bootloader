@@ -44,7 +44,7 @@ OBJS += \
 # Each subdirectory must supply rules for building sources it contributes
 Sources/bootloader.o: ../Sources/bootloader.c
 	@echo 'Building file: $<'
-	@echo 'Executing target #35 $<'
+	@echo 'Executing target #28 $<'
 	@echo 'Invoking: Standard S32DS C Compiler'
 	arm-none-eabi-gcc "@Sources/bootloader.args" -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "Sources/bootloader.o" "$<"
 	@echo 'Finished building: $<'
@@ -52,7 +52,7 @@ Sources/bootloader.o: ../Sources/bootloader.c
 
 Sources/main.o: ../Sources/main.c
 	@echo 'Building file: $<'
-	@echo 'Executing target #36 $<'
+	@echo 'Executing target #29 $<'
 	@echo 'Invoking: Standard S32DS C Compiler'
 	arm-none-eabi-gcc "@Sources/main.args" -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "Sources/main.o" "$<"
 	@echo 'Finished building: $<'
@@ -60,7 +60,7 @@ Sources/main.o: ../Sources/main.c
 
 Sources/pc_communication.o: ../Sources/pc_communication.c
 	@echo 'Building file: $<'
-	@echo 'Executing target #37 $<'
+	@echo 'Executing target #30 $<'
 	@echo 'Invoking: Standard S32DS C Compiler'
 	arm-none-eabi-gcc "@Sources/pc_communication.args" -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "Sources/pc_communication.o" "$<"
 	@echo 'Finished building: $<'

@@ -40,7 +40,7 @@
 -I"C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_Runtime/include"
 -I"C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_Runtime/include/arm"
 -x assembler-with-cpp
--O0
+-O3
 -g3
 -mcpu=cortex-m4
 -mthumb

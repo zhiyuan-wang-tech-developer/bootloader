@@ -30,7 +30,7 @@ OBJS += \
 # Each subdirectory must supply rules for building sources it contributes
 SDK/platform/drivers/src/lpit/lpit_driver.o: ../SDK/platform/drivers/src/lpit/lpit_driver.c
 	@echo 'Building file: $<'
-	@echo 'Executing target #21 $<'
+	@echo 'Executing target #19 $<'
 	@echo 'Invoking: Standard S32DS C Compiler'
 	arm-none-eabi-gcc "@SDK/platform/drivers/src/lpit/lpit_driver.args" -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "SDK/platform/drivers/src/lpit/lpit_driver.o" "$<"
 	@echo 'Finished building: $<'

@@ -104,10 +104,10 @@
       <EmptySection_DummyValue />
     </Events>
   </Bean>
-  <Bean name="lpTmr1" type="lptmr">
+  <Bean name="lpTmr0" type="lptmr">
     <Enabled v="Y" />
     <Properties>
-      <Component_name v="lpTmr1" />
+      <Component_name v="lpTmr0" />
       <Device v="LPTMR0" />
       <Component_version v="S32K144_SDK01" />
     </Properties>
@@ -118,10 +118,10 @@
       <EmptySection_DummyValue />
     </Events>
   </Bean>
-  <Bean name="lpit1" type="lpit">
+  <Bean name="lpit0" type="lpit">
     <Enabled v="Y" />
     <Properties>
-      <Component_name v="lpit1" />
+      <Component_name v="lpit0" />
       <Device v="LPIT0" />
       <Component_version v="S32K144_SDK01" />
     </Properties>
@@ -165,34 +165,6 @@
     <Properties>
       <Component_name v="osif1" />
       <Component_version v="osifcommon" />
-    </Properties>
-    <Methods>
-      <EmptySection_DummyValue />
-    </Methods>
-    <Events>
-      <EmptySection_DummyValue />
-    </Events>
-  </Bean>
-  <Bean name="lpspi0_adc" type="lpspi">
-    <Enabled v="Y" />
-    <Properties>
-      <Component_name v="lpspi0_adc" />
-      <Device v="LPSPI0" />
-      <Component_version v="S32K144_SDK01" />
-    </Properties>
-    <Methods>
-      <EmptySection_DummyValue />
-    </Methods>
-    <Events>
-      <EmptySection_DummyValue />
-    </Events>
-  </Bean>
-  <Bean name="lpspi2_dac" type="lpspi">
-    <Enabled v="Y" />
-    <Properties>
-      <Component_name v="lpspi2_dac" />
-      <Device v="LPSPI2" />
-      <Component_version v="S32K144_SDK01" />
     </Properties>
     <Methods>
       <EmptySection_DummyValue />

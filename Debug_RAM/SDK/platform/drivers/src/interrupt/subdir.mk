@@ -30,7 +30,7 @@ OBJS += \
 # Each subdirectory must supply rules for building sources it contributes
 SDK/platform/drivers/src/interrupt/interrupt_manager.o: ../SDK/platform/drivers/src/interrupt/interrupt_manager.c
 	@echo 'Building file: $<'
-	@echo 'Executing target #20 $<'
+	@echo 'Executing target #18 $<'
 	@echo 'Invoking: Standard S32DS C Compiler'
 	arm-none-eabi-gcc "@SDK/platform/drivers/src/interrupt/interrupt_manager.args" -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "SDK/platform/drivers/src/interrupt/interrupt_manager.o" "$<"
 	@echo 'Finished building: $<'

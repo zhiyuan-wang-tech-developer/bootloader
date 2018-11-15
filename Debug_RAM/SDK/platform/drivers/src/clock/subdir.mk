@@ -30,7 +30,7 @@ OBJS += \
 # Each subdirectory must supply rules for building sources it contributes
 SDK/platform/drivers/src/clock/clock_manager.o: ../SDK/platform/drivers/src/clock/clock_manager.c
 	@echo 'Building file: $<'
-	@echo 'Executing target #15 $<'
+	@echo 'Executing target #13 $<'
 	@echo 'Invoking: Standard S32DS C Compiler'
 	arm-none-eabi-gcc "@SDK/platform/drivers/src/clock/clock_manager.args" -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "SDK/platform/drivers/src/clock/clock_manager.o" "$<"
 	@echo 'Finished building: $<'

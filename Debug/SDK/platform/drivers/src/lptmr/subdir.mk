@@ -37,7 +37,7 @@ OBJS += \
 # Each subdirectory must supply rules for building sources it contributes
 SDK/platform/drivers/src/lptmr/lptmr_driver.o: ../SDK/platform/drivers/src/lptmr/lptmr_driver.c
 	@echo 'Building file: $<'
-	@echo 'Executing target #27 $<'
+	@echo 'Executing target #20 $<'
 	@echo 'Invoking: Standard S32DS C Compiler'
 	arm-none-eabi-gcc "@SDK/platform/drivers/src/lptmr/lptmr_driver.args" -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "SDK/platform/drivers/src/lptmr/lptmr_driver.o" "$<"
 	@echo 'Finished building: $<'
@@ -45,7 +45,7 @@ SDK/platform/drivers/src/lptmr/lptmr_driver.o: ../SDK/platform/drivers/src/lptmr
 
 SDK/platform/drivers/src/lptmr/lptmr_hw_access.o: ../SDK/platform/drivers/src/lptmr/lptmr_hw_access.c
 	@echo 'Building file: $<'
-	@echo 'Executing target #28 $<'
+	@echo 'Executing target #21 $<'
 	@echo 'Invoking: Standard S32DS C Compiler'
 	arm-none-eabi-gcc "@SDK/platform/drivers/src/lptmr/lptmr_hw_access.args" -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "SDK/platform/drivers/src/lptmr/lptmr_hw_access.o" "$<"
 	@echo 'Finished building: $<'

@@ -35,23 +35,16 @@ Sources/main.o: ../Sources/main.c \
  C:/NXP/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/rtos/osif/osif.h \
  C:/NXP/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/drivers/inc/edma_driver.h \
  C:/NXP/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/devices/callbacks.h \
- C:/NXP/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/drivers/inc/lpspi_master_driver.h \
- C:/NXP/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/drivers/inc/lpspi_shared_function.h \
- C:/NXP/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/drivers/inc/clock_manager.h \
- C:/NXP/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/drivers/inc/lpspi_slave_driver.h \
- C:/NXP/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/drivers/inc/lpspi_shared_function.h \
  C:/NXP/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/drivers/inc/flash_driver.h \
  C:/NXP/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/devices/S32K144/startup/system_S32K144.h \
  D:/AllRound/Project/AutoLivBootloader/Generated_Code/clockManager1.h \
  D:/AllRound/Project/AutoLivBootloader/Generated_Code/Cpu.h \
  D:/AllRound/Project/AutoLivBootloader/Generated_Code/pin_mux.h \
  C:/NXP/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/drivers/inc/pins_driver.h \
- D:/AllRound/Project/AutoLivBootloader/Generated_Code/lpTmr1.h \
- D:/AllRound/Project/AutoLivBootloader/Generated_Code/lpit1.h \
+ D:/AllRound/Project/AutoLivBootloader/Generated_Code/lpTmr0.h \
+ D:/AllRound/Project/AutoLivBootloader/Generated_Code/lpit0.h \
  D:/AllRound/Project/AutoLivBootloader/Generated_Code/lpuart0.h \
  D:/AllRound/Project/AutoLivBootloader/Generated_Code/dmaController1.h \
- D:/AllRound/Project/AutoLivBootloader/Generated_Code/lpspi0_adc.h \
- D:/AllRound/Project/AutoLivBootloader/Generated_Code/lpspi2_dac.h \
  D:/AllRound/Project/AutoLivBootloader/Generated_Code/Flash.h \
  D:/AllRound/Project/AutoLivBootloader/include/pc_communication.h \
  D:/AllRound/Project/AutoLivBootloader/include/bootloader.h \
@@ -66,7 +59,8 @@ Sources/main.o: ../Sources/main.c \
  C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/arm/stdarg.ARM.h \
  C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/string.h \
  C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/cstring \
- C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/string_api.h
+ C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/string_api.h \
+ D:/AllRound/Project/AutoLivBootloader/include/system_config.h
 
 C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/lib_c99.prefix:
 
@@ -140,16 +134,6 @@ C:/NXP/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/drivers/inc/ed
 
 C:/NXP/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/devices/callbacks.h:
 
-C:/NXP/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/drivers/inc/lpspi_master_driver.h:
-
-C:/NXP/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/drivers/inc/lpspi_shared_function.h:
-
-C:/NXP/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/drivers/inc/clock_manager.h:
-
-C:/NXP/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/drivers/inc/lpspi_slave_driver.h:
-
-C:/NXP/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/drivers/inc/lpspi_shared_function.h:
-
 C:/NXP/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/drivers/inc/flash_driver.h:
 
 C:/NXP/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/devices/S32K144/startup/system_S32K144.h:
@@ -162,17 +146,13 @@ D:/AllRound/Project/AutoLivBootloader/Generated_Code/pin_mux.h:
 
 C:/NXP/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/drivers/inc/pins_driver.h:
 
-D:/AllRound/Project/AutoLivBootloader/Generated_Code/lpTmr1.h:
+D:/AllRound/Project/AutoLivBootloader/Generated_Code/lpTmr0.h:
 
-D:/AllRound/Project/AutoLivBootloader/Generated_Code/lpit1.h:
+D:/AllRound/Project/AutoLivBootloader/Generated_Code/lpit0.h:
 
 D:/AllRound/Project/AutoLivBootloader/Generated_Code/lpuart0.h:
 
 D:/AllRound/Project/AutoLivBootloader/Generated_Code/dmaController1.h:
-
-D:/AllRound/Project/AutoLivBootloader/Generated_Code/lpspi0_adc.h:
-
-D:/AllRound/Project/AutoLivBootloader/Generated_Code/lpspi2_dac.h:
 
 D:/AllRound/Project/AutoLivBootloader/Generated_Code/Flash.h:
 
@@ -203,3 +183,5 @@ C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/string.h:
 C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/cstring:
 
 C:/NXP/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/string_api.h:
+
+D:/AllRound/Project/AutoLivBootloader/include/system_config.h:

@@ -80,43 +80,43 @@ Module "pin_mux"   (component PinSettings)
    - pin_mux_PINS_DRV_ReadPins -This function returns the current input values from a port. Only pins configured as input will 
                 have meaningful values
 
-Module "lpTmr1"    (component lptmr)
-   - lpTmr1_LPTMR_DRV_InitConfigStruct -Initialize configuration structure.
-   - lpTmr1_LPTMR_DRV_Init -Initializes the LPTMR as Timer or Pulse Counter
-   - lpTmr1_LPTMR_DRV_SetConfig -Configure a LPTMR instance.
-   - lpTmr1_LPTMR_DRV_GetConfig -Get the current configuration of a LPTMR instance.
-   - lpTmr1_LPTMR_DRV_Deinit -Deinitializes a LPTMR instance.
-   - lpTmr1_LPTMR_DRV_SetCompareValueByCount -Change the Compare Value in counter tick units.
-   - lpTmr1_LPTMR_DRV_GetCompareValueByCount -Get the Compare Value in counter tick units.
-   - lpTmr1_LPTMR_DRV_SetCompareValueByUs -Set the compare value for Timer Mode in microseconds.
-   - lpTmr1_LPTMR_DRV_GetCompareValueByUs -Get the Compare Value in microseconds.
-   - lpTmr1_LPTMR_DRV_GetCompareFlag -Get the current state of the Compare Flag (Interrupt Pending)
-   - lpTmr1_LPTMR_DRV_ClearCompareFlag -Clear the Compare/Interrupt Pending Flag.
-   - lpTmr1_LPTMR_DRV_IsRunning -Get the run state of a LPTMR instance.
-   - lpTmr1_LPTMR_DRV_SetInterrupt -Enable/disable the LPTMR interrupt
-   - lpTmr1_LPTMR_DRV_GetCounterValueByCount -Get the current counter value in counter tick units.
-   - lpTmr1_LPTMR_DRV_StartCounter -Enable the LPTMR / Start the counter.
-   - lpTmr1_LPTMR_DRV_StopCounter -Disable the LPTMR / Stop the counter.
-   - lpTmr1_LPTMR_DRV_SetPinConfiguration -Set the Input Pin configuration for Pulse Counter mode.
+Module "lpTmr0"    (component lptmr)
+   - lpTmr0_LPTMR_DRV_InitConfigStruct -Initialize configuration structure.
+   - lpTmr0_LPTMR_DRV_Init -Initializes the LPTMR as Timer or Pulse Counter
+   - lpTmr0_LPTMR_DRV_SetConfig -Configure a LPTMR instance.
+   - lpTmr0_LPTMR_DRV_GetConfig -Get the current configuration of a LPTMR instance.
+   - lpTmr0_LPTMR_DRV_Deinit -Deinitializes a LPTMR instance.
+   - lpTmr0_LPTMR_DRV_SetCompareValueByCount -Change the Compare Value in counter tick units.
+   - lpTmr0_LPTMR_DRV_GetCompareValueByCount -Get the Compare Value in counter tick units.
+   - lpTmr0_LPTMR_DRV_SetCompareValueByUs -Set the compare value for Timer Mode in microseconds.
+   - lpTmr0_LPTMR_DRV_GetCompareValueByUs -Get the Compare Value in microseconds.
+   - lpTmr0_LPTMR_DRV_GetCompareFlag -Get the current state of the Compare Flag (Interrupt Pending)
+   - lpTmr0_LPTMR_DRV_ClearCompareFlag -Clear the Compare/Interrupt Pending Flag.
+   - lpTmr0_LPTMR_DRV_IsRunning -Get the run state of a LPTMR instance.
+   - lpTmr0_LPTMR_DRV_SetInterrupt -Enable/disable the LPTMR interrupt
+   - lpTmr0_LPTMR_DRV_GetCounterValueByCount -Get the current counter value in counter tick units.
+   - lpTmr0_LPTMR_DRV_StartCounter -Enable the LPTMR / Start the counter.
+   - lpTmr0_LPTMR_DRV_StopCounter -Disable the LPTMR / Stop the counter.
+   - lpTmr0_LPTMR_DRV_SetPinConfiguration -Set the Input Pin configuration for Pulse Counter mode.
 
-Module "lpit1"     (component lpit)
-   - lpit1_LPIT_DRV_Init -Initializes the LPIT module.
-   - lpit1_LPIT_DRV_Deinit -De-initializes LPIT module.
-   - lpit1_LPIT_DRV_InitChannel -Initializes the LPIT channel.
-   - lpit1_LPIT_DRV_StartTimerChannels -Starts the timer channel counting.
-   - lpit1_LPIT_DRV_StopTimerChannels -Stops the timer channel counting.
-   - lpit1_LPIT_DRV_SetTimerPeriodByUs -Sets the timer channel period in microseconds.
-   - lpit1_LPIT_DRV_SetTimerPeriodInDual16ModeByUs -Sets the timer channel period in microseconds when the timer channel mode 
+Module "lpit0"     (component lpit)
+   - lpit0_LPIT_DRV_Init -Initializes the LPIT module.
+   - lpit0_LPIT_DRV_Deinit -De-initializes LPIT module.
+   - lpit0_LPIT_DRV_InitChannel -Initializes the LPIT channel.
+   - lpit0_LPIT_DRV_StartTimerChannels -Starts the timer channel counting.
+   - lpit0_LPIT_DRV_StopTimerChannels -Stops the timer channel counting.
+   - lpit0_LPIT_DRV_SetTimerPeriodByUs -Sets the timer channel period in microseconds.
+   - lpit0_LPIT_DRV_SetTimerPeriodInDual16ModeByUs -Sets the timer channel period in microseconds when the timer channel mode 
                 is dual 16 bit periodic counter.
-   - lpit1_LPIT_DRV_GetTimerPeriodByUs -Gets the timer channel period in microseconds.
-   - lpit1_LPIT_DRV_GetCurrentTimerUs -Gets the current timer channel counting value in microseconds.
-   - lpit1_LPIT_DRV_SetTimerPeriodByCount -Sets the timer channel period in count unit.
-   - lpit1_LPIT_DRV_SetTimerPeriodInDual16ModeByCount -Sets the timer channel period in count when the timer channel mode is 
+   - lpit0_LPIT_DRV_GetTimerPeriodByUs -Gets the timer channel period in microseconds.
+   - lpit0_LPIT_DRV_GetCurrentTimerUs -Gets the current timer channel counting value in microseconds.
+   - lpit0_LPIT_DRV_SetTimerPeriodByCount -Sets the timer channel period in count unit.
+   - lpit0_LPIT_DRV_SetTimerPeriodInDual16ModeByCount -Sets the timer channel period in count when the timer channel mode is 
                 dual 16 bit periodic counter.
-   - lpit1_LPIT_DRV_GetTimerPeriodByCount -Gets the current timer channel period in count unit.
-   - lpit1_LPIT_DRV_GetCurrentTimerCount -Gets the current timer channel counting value in count.
-   - lpit1_LPIT_DRV_GetInterruptFlagTimerChannels -Gets the current interrupt flag of timer channels.
-   - lpit1_LPIT_DRV_ClearInterruptFlagTimerChannels -Clears the interrupt flag of timer channels.
+   - lpit0_LPIT_DRV_GetTimerPeriodByCount -Gets the current timer channel period in count unit.
+   - lpit0_LPIT_DRV_GetCurrentTimerCount -Gets the current timer channel counting value in count.
+   - lpit0_LPIT_DRV_GetInterruptFlagTimerChannels -Gets the current interrupt flag of timer channels.
+   - lpit0_LPIT_DRV_ClearInterruptFlagTimerChannels -Clears the interrupt flag of timer channels.
 
 Module "lpuart0"   (component lpuart)
    - lpuart0_LPUART_DRV_Init -Initializes an LPUART operation instance.
@@ -194,40 +194,6 @@ Module "osif1"     (component osif)
    - osif1_OSIF_SemaDestroy -Destroys a previously created semaphore.
    - osif1_OSIF_GetMilliseconds -Returns the number of miliseconds elapsed since starting the internal timer or starting the 
                 scheduler.
-
-Module "lpspi0_adc" (component lpspi)
-   - lpspi0_adc_LPSPI_DRV_MasterInit -Initializes a LPSPI instance for interrupt driven master mode operation.
-   - lpspi0_adc_LPSPI_DRV_MasterDeinit -Shuts down a LPSPI instance.
-   - lpspi0_adc_LPSPI_DRV_MasterSetDelay -Configures the LPSPI master mode bus timing delay options.
-   - lpspi0_adc_LPSPI_DRV_MasterConfigureBus -Configures the LPSPI port physical parameters to access a device on the bus when 
-                the LSPI instance is configured for interrupt operation.
-   - lpspi0_adc_LPSPI_DRV_MasterTransferBlocking -Performs an interrupt driven blocking SPI master mode transfer.
-   - lpspi0_adc_LPSPI_DRV_MasterTransfer -Performs an interrupt driven non-blocking SPI master mode transfer.
-   - lpspi0_adc_LPSPI_DRV_MasterGetTransferStatus -Returns whether the previous interrupt driven transfer is completed.
-   - lpspi0_adc_LPSPI_DRV_MasterAbortTransfer -Terminates an interrupt driven asynchronous transfer early.
-   - lpspi0_adc_LPSPI_DRV_SlaveInit -Initializes a LPSPI instance for a slave mode operation, using interrupt mechanism.
-   - lpspi0_adc_LPSPI_DRV_SlaveDeinit -Shuts down an LPSPI instance interrupt mechanism.
-   - lpspi0_adc_LPSPI_DRV_SlaveTransferBlocking -Transfers data on LPSPI bus using interrupt and a blocking call.
-   - lpspi0_adc_LPSPI_DRV_SlaveTransfer -Starts the transfer data on LPSPI bus using an interrupt and a non-blocking call.
-   - lpspi0_adc_LPSPI_DRV_SlaveAbortTransfer -Aborts the transfer that started by a non-blocking call transfer function.
-   - lpspi0_adc_LPSPI_DRV_SlaveGetTransferStatus -Returns whether the previous transfer is finished.
-
-Module "lpspi2_dac" (component lpspi)
-   - lpspi2_dac_LPSPI_DRV_MasterInit -Initializes a LPSPI instance for interrupt driven master mode operation.
-   - lpspi2_dac_LPSPI_DRV_MasterDeinit -Shuts down a LPSPI instance.
-   - lpspi2_dac_LPSPI_DRV_MasterSetDelay -Configures the LPSPI master mode bus timing delay options.
-   - lpspi2_dac_LPSPI_DRV_MasterConfigureBus -Configures the LPSPI port physical parameters to access a device on the bus when 
-                the LSPI instance is configured for interrupt operation.
-   - lpspi2_dac_LPSPI_DRV_MasterTransferBlocking -Performs an interrupt driven blocking SPI master mode transfer.
-   - lpspi2_dac_LPSPI_DRV_MasterTransfer -Performs an interrupt driven non-blocking SPI master mode transfer.
-   - lpspi2_dac_LPSPI_DRV_MasterGetTransferStatus -Returns whether the previous interrupt driven transfer is completed.
-   - lpspi2_dac_LPSPI_DRV_MasterAbortTransfer -Terminates an interrupt driven asynchronous transfer early.
-   - lpspi2_dac_LPSPI_DRV_SlaveInit -Initializes a LPSPI instance for a slave mode operation, using interrupt mechanism.
-   - lpspi2_dac_LPSPI_DRV_SlaveDeinit -Shuts down an LPSPI instance interrupt mechanism.
-   - lpspi2_dac_LPSPI_DRV_SlaveTransferBlocking -Transfers data on LPSPI bus using interrupt and a blocking call.
-   - lpspi2_dac_LPSPI_DRV_SlaveTransfer -Starts the transfer data on LPSPI bus using an interrupt and a non-blocking call.
-   - lpspi2_dac_LPSPI_DRV_SlaveAbortTransfer -Aborts the transfer that started by a non-blocking call transfer function.
-   - lpspi2_dac_LPSPI_DRV_SlaveGetTransferStatus -Returns whether the previous transfer is finished.
 
 Module "Flash"     (component flash)
    - Flash_FLASH_DRV_Init -Flash initialization.

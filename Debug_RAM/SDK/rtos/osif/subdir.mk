@@ -30,7 +30,7 @@ OBJS += \
 # Each subdirectory must supply rules for building sources it contributes
 SDK/rtos/osif/osif_baremetal.o: ../SDK/rtos/osif/osif_baremetal.c
 	@echo 'Building file: $<'
-	@echo 'Executing target #34 $<'
+	@echo 'Executing target #27 $<'
 	@echo 'Invoking: Standard S32DS C Compiler'
 	arm-none-eabi-gcc "@SDK/rtos/osif/osif_baremetal.args" -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "SDK/rtos/osif/osif_baremetal.o" "$<"
 	@echo 'Finished building: $<'

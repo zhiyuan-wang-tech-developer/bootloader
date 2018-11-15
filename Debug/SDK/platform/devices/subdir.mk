@@ -30,7 +30,7 @@ OBJS += \
 # Each subdirectory must supply rules for building sources it contributes
 SDK/platform/devices/startup.o: ../SDK/platform/devices/startup.c
 	@echo 'Building file: $<'
-	@echo 'Executing target #13 $<'
+	@echo 'Executing target #11 $<'
 	@echo 'Invoking: Standard S32DS C Compiler'
 	arm-none-eabi-gcc "@SDK/platform/devices/startup.args" -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "SDK/platform/devices/startup.o" "$<"
 	@echo 'Finished building: $<'

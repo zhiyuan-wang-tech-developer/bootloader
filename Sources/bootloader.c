@@ -679,24 +679,30 @@ void firmware_update(void)
 	retValue = eeprom_read_new_firmware_status();
 	if(!retValue)
 	{
+#ifdef DEBUG_FROM_RAM
 //		printf("Fail to read EEPROM!\r\n");
+#endif
 		retValue = eeprom_read_new_firmware_status();
 	}
 
 	if(new_firmware_status.isNewFirmwareUpdated == 1u)
 	{
-
+#ifdef DEBUG_FROM_RAM
 //		printf("Start new firmware updating...\r\n");
+#endif
 		// Copy new firmware to overwrite old firmware.
 		retValue = flash_overwrite_old_firmware();
 		if(!retValue)
 		{
+#ifdef DEBUG_FROM_RAM
 //			printf("Failure in new firmware copying...!\r\n");
+#endif
 			// Copy new firmware again if the previous copy failed.
 			retValue = flash_overwrite_old_firmware();
 		}
+#ifdef DEBUG_FROM_RAM
 //		printf("End new firmware updating...\r\n");
-
+#endif
 		// After the new firmware is copied to overwrite the old firmware, clear the update flag.
 		new_firmware_status.isNewFirmwareUpdated = 0u;
 
@@ -704,18 +710,27 @@ void firmware_update(void)
 		retValue = eeprom_write_new_firmware_status();
 		if(!retValue)
 		{
+#ifdef DEBUG_FROM_RAM
 //			printf("Failure to write EEPROM!\r\n");
+#endif
 			retValue = eeprom_write_new_firmware_status();
 		}
-//		JumpToOldFirmware();
-//		printf("Auto reset\r\n");
-//		auto_ram_reset();
+
+#ifdef DEBUG_FROM_RAM
+		printf("Auto reset\r\n");
+		auto_ram_reset();
+#endif
+
+#ifdef RUN_FROM_FLASH
 		auto_flash_reset();
+#endif
 	}
 	else
 	{
-//		printf("No firmware updated\r\n");
-//		printf("Jump to old firmware\r\n");
+#ifdef DEBUG_FROM_RAM
+		printf("No firmware updated\r\n");
+		printf("Jump to old firmware\r\n");
+#endif
 		/*
 		 * If there exists an old firmware, jump to the old firmware and this function will never return.
 		 * If no old firmware exists, this function will return.
