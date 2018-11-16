@@ -119,7 +119,8 @@ int main(void)
 		 */
 		if( isFirmwareDownloading )
 		{
-			timer_interrupt_off();
+			timer_stop();
+//			timer_interrupt_off();
 //			PINS_DRV_TogglePins(PTE, 1<<8);
 			/*
 			 * Now the firmware is not being downloaded,  other tasks can be running.
@@ -129,9 +130,8 @@ int main(void)
 		}
 		else
 		{
-			timer_interrupt_on();
+//			timer_interrupt_on();
 		}
-	//    	uart_bluetooth_test();
 	}
 
 	/*** Don't write any code pass this line, or it will be deleted during code generation. ***/
@@ -235,14 +235,14 @@ void LPIT0_Ch0_IRQHandler(void)
 			LPUART_DRV_SendData(INST_LPUART0, message, sizeof(message));
 		}
 	}
-//	else
-//	{
-//		/*
-//		 * New firmware is being downloaded.
-//		 * Increment download time every 200ms for time out check.
-//		 */
-//		countDownloadTime++;
-//	}
+	else
+	{
+		/*
+		 * New firmware is being downloaded.
+		 * Increment download time every 200ms for time out check.
+		 */
+		countDownloadTime++;
+	}
 }
 
 /*

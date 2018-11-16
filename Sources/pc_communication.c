@@ -468,11 +468,11 @@ bool isDownloadTimeout( void )
 	{
 		// If the firmware is being downloaded, the timer interrupt is switched off.
 		// Check the timer interrupt flag to see if 200ms timing is up.
-		if( LPIT_DRV_GetInterruptFlagTimerChannels(INST_LPIT0, 0x01u) )
-		{
-			LPIT_DRV_ClearInterruptFlagTimerChannels(INST_LPIT0, 0x01u);
-			countDownloadTime++;
-		}
+//		if( LPIT_DRV_GetInterruptFlagTimerChannels(INST_LPIT0, 0x01u) )
+//		{
+//			LPIT_DRV_ClearInterruptFlagTimerChannels(INST_LPIT0, 0x01u);
+//			countDownloadTime++;
+//		}
 
 		if( countDownloadTime > MAX_DOWNLOAD_TIME )
 		{

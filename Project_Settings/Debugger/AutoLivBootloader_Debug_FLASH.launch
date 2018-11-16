@@ -77,7 +77,7 @@
 <intAttribute key="com.pemicro.debug.gdbjtag.pne.jtagTapNumber" value="0"/>
 <stringAttribute key="com.pemicro.debug.gdbjtag.pne.macScript" value=""/>
 <booleanAttribute key="com.pemicro.debug.gdbjtag.pne.macScriptEnable" value="false"/>
-<booleanAttribute key="com.pemicro.debug.gdbjtag.pne.ml.ALWAYS_ERASE" value="false"/>
+<booleanAttribute key="com.pemicro.debug.gdbjtag.pne.ml.ALWAYS_ERASE" value="true"/>
 <stringAttribute key="com.pemicro.debug.gdbjtag.pne.ml.CYCLONE_IP" value=""/>
 <booleanAttribute key="com.pemicro.debug.gdbjtag.pne.ml.DO_RESET_DELAY" value="false"/>
 <intAttribute key="com.pemicro.debug.gdbjtag.pne.ml.INTERFACE_PORT" value="0"/>
@@ -203,5 +203,5 @@
 </listAttribute>
 <stringAttribute key="org.eclipse.dsf.launch.MEMORY_BLOCKS" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#13;&#10;&lt;memoryBlockExpressionList context=&quot;reserved-for-future-use&quot;&gt;&#13;&#10;&lt;gdbmemoryBlockExpression address=&quot;335544320&quot; label=&quot;0x14000000&quot;/&gt;&#13;&#10;&lt;/memoryBlockExpressionList&gt;&#13;&#10;"/>
 <stringAttribute key="process_factory_id" value="org.eclipse.cdt.dsf.gdb.GdbProcessFactory"/>
-<stringAttribute key="saved_expressions&lt;seperator&gt;Unknown" value="0x00000000,0x0000c000,0x00046000,0x0000,0xC000,0x46000,0x450,0xc450"/>
+<stringAttribute key="saved_expressions&lt;seperator&gt;Unknown" value="0x00000000,0x0000c000,0x00046000,0x0000,0xC000,0x46000,0x450,0xc450,0xc000"/>
 </launchConfiguration>
