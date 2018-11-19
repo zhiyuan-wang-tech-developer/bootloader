@@ -146,7 +146,7 @@ bool flash_init(void)
     return true;
 }
 
-
+/*
 void program_flash_test(void)
 {
 	uint32_t flash_program_address_1 = 0x0005F090;
@@ -170,7 +170,7 @@ void program_flash_test(void)
 	{
 		readDataArray1[i] = *((uint8_t *)flash_program_address_1 + i);
 	}
-	/* Try to write to the same memory area will result in write error */
+	 Try to write to the same memory area will result in write error
 
 	flash_status = FLASH_DRV_Program(&flashSSDConfig, flash_program_address_2, 32, test_text);
 	flash_status = FLASH_DRV_ProgramCheck(&flashSSDConfig, flash_program_address_2, 32, test_text, &failAddress, 0x01);
@@ -180,7 +180,9 @@ void program_flash_test(void)
 	}
 	flash_status = FLASH_DRV_EraseSector(&flashSSDConfig, flash_program_sector_start_address, FEATURE_FLS_PF_BLOCK_SECTOR_SIZE);
 }
+*/
 
+/*
 void emulated_eeprom_test(void)
 {
 	uint32_t eeprom_address_1 = 0;
@@ -189,7 +191,7 @@ void emulated_eeprom_test(void)
 	uint8_t write_data = 0;
 	uint8_t read_data = 0;
 	status_t flash_status = 0;
-    /* Try to write data to EEPROM if FlexRAM is configured as Emulated EEPROM */
+     Try to write data to EEPROM if FlexRAM is configured as Emulated EEPROM
     if (flashSSDConfig.EEESize != 0u)
     {
         eeprom_address_1 = flashSSDConfig.EERAMBase;
@@ -197,14 +199,14 @@ void emulated_eeprom_test(void)
         write_data = 0x52u;
         flash_status = FLASH_DRV_EEEWrite(&flashSSDConfig, eeprom_address_1, size, &write_data);
 
-        /* Read the written data */
+         Read the written data
         read_data = *((uint8_t *)eeprom_address_1);
-        /* Try to update one byte in an EEPROM address which isn't aligned */
+         Try to update one byte in an EEPROM address which isn't aligned
         eeprom_address_2 = eeprom_address_1 + 1u;
         size = sizeof(uint8_t);
         write_data = 0x75u;
         flash_status = FLASH_DRV_EEEWrite(&flashSSDConfig, eeprom_address_2, size, &write_data);
-        /* Then read */
+         Then read
         read_data = *((uint8_t *)eeprom_address_2);
 
         write_data = 0x02u;
@@ -214,12 +216,13 @@ void emulated_eeprom_test(void)
         read_data = *((uint8_t *)eeprom_address_2);
     }
 }
+*/
 
 // Write Program Flash
 bool flash_writeBytes(uint32_t writeStartAddress, uint32_t writeByteNum, uint8_t * pBufferToWrite)
 {
 	status_t flash_status = STATUS_SUCCESS;
-	uint32_t failAddress = 0;	// Hold the failed write address
+//	uint32_t failAddress = 0;	// Hold the failed write address
 	// Safety Check
 	if( (writeStartAddress % 8u) != 0u )
 	{
@@ -258,12 +261,15 @@ bool flash_writeBytes(uint32_t writeStartAddress, uint32_t writeByteNum, uint8_t
 	{
 		return false;
 	}
+
 	// Check data written to the flash
-	flash_status = FLASH_DRV_ProgramCheck(&flashSSDConfig, writeStartAddress, writeByteNum, pBufferToWrite, &failAddress, 0x01u);
-	if( flash_status != STATUS_SUCCESS )
-	{
-		return false;
-	}
+//	INT_SYS_DisableIRQGlobal();
+//	flash_status = FLASH_DRV_ProgramCheck(&flashSSDConfig, writeStartAddress, writeByteNum, pBufferToWrite, &failAddress, 0x01u);
+//  INT_SYS_EnableIRQGlobal();
+//	if( flash_status != STATUS_SUCCESS )
+//	{
+//		return false;
+//	}
 	return true;
 }
 
@@ -314,9 +320,27 @@ void flash_write_buffer_little_endian_to_big_endian(void)
 bool flash_check_write_64bytes(void)
 {
 	int retValue = 0;
+	uint8_t i = 0;
+	uint8_t * checkStartAddress = (uint8_t *)flash_LastWrite64BytesStartAddress;
+
+	INT_SYS_DisableIRQGlobal();
 	//Note: The memory copy sometimes failed, so suggest not to use it anymore.
-	memcpy(flash_ReadBuffer, (uint8_t *)flash_LastWrite64BytesStartAddress, 64u);
-	retValue = memcmp(flash_ReadBuffer, flash_WriteBuffer, 64u);
+	//memcpy(flash_ReadBuffer, (uint8_t *)flash_LastWrite64BytesStartAddress, 64u);
+	for( i = 0; i < 64u; i++ )
+	{
+		// Read 64 bytes from flash.
+		flash_ReadBuffer[i] = checkStartAddress[i];
+	}
+	//retValue = memcmp(flash_ReadBuffer, flash_WriteBuffer, 64u);
+	for( i = 0; i < 64u; i++ )
+	{
+		if( flash_ReadBuffer[i] != flash_WriteBuffer[i] )
+		{
+			retValue++;
+		}
+	}
+	INT_SYS_EnableIRQGlobal();
+
 	if( retValue == 0 )
 	{
 		// The data in both flash_ReadBuffer and flash_WriteBuffer are equal.
@@ -367,6 +391,7 @@ bool flash_auto_write_64bytes(void)
 	// Load the flash write buffer from the rx data packet prior to flash writing
 	flash_load_write_buffer();
 //	flash_write_buffer_little_endian_to_big_endian();
+
 	// Write the data block to the flash
 	retValue = flash_writeBytes(flash_CurrentWrite64BytesStartAddress, FLASH_WRITE_DATA_SIZE, flash_WriteBuffer);
 	if(retValue == false)
@@ -375,15 +400,15 @@ bool flash_auto_write_64bytes(void)
 		return false;
 	}
 	flash_LastWrite64BytesStartAddress = flash_CurrentWrite64BytesStartAddress;
+
 	// Check if the flash write is successful
-	// Program check has been done in flash_writeBytes().
-	// Memory copy function in flash_check_write_64bytes() may fail, suggest not to use it.
-	//	retValue = flash_check_write_64bytes();
-	//	if(retValue == false)
-	//	{
-	//		// Mismatch in flash writing data
-	//		return false;
-	//	}
+	retValue = flash_check_write_64bytes();
+	if(retValue == false)
+	{
+		// Mismatch in flash writing data
+		return false;
+	}
+
 	flash_Write64BytesCount++;
 	// Flash writing success
 	return true;

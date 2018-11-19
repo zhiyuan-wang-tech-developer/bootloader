@@ -93,6 +93,8 @@ int main(void)
      */
     firmware_update();
 
+    INT_SYS_EnableIRQGlobal();
+
     PC2UART_communication_init();
 
 //    firmware_update_test();
@@ -117,21 +119,23 @@ int main(void)
 		/*
 		 * If the firmware is being downloaded, the tasks within the brackets are not executed any more.
 		 */
+/*
 		if( isFirmwareDownloading )
 		{
-			timer_stop();
+//			timer_stop();
 //			timer_interrupt_off();
 //			PINS_DRV_TogglePins(PTE, 1<<8);
-			/*
+
 			 * Now the firmware is not being downloaded,  other tasks can be running.
 			 *
-			 */
+
 //			PINS_DRV_TogglePins(PTD, 1<<6);
 		}
 		else
 		{
 //			timer_interrupt_on();
 		}
+*/
 	}
 
 	/*** Don't write any code pass this line, or it will be deleted during code generation. ***/

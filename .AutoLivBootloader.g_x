@@ -93,13 +93,13 @@
       <File Name="SDK/platform/drivers/src/edma/edma_hw_access.h" FileDate="2018-10-22, 13:45:35" FileAge="1540208735749" FileType="1048576" CompNumb="29" />
       <File Name="SDK/platform/drivers/src/lptmr/lptmr_hw_access.h" FileDate="2018-10-22, 13:45:35" FileAge="1540208735717" FileType="1048576" CompNumb="14" />
       <File Name="SDK/platform/drivers/src/clock/clock_manager.c" FileDate="2018-10-22, 13:39:30" FileAge="1540208370942" FileType="1048576" CompNumb="10" />
-      <File Name="SDK/platform/drivers/src/edma/edma_hw_access.c" FileDate="2018-10-22, 13:45:35" FileAge="1540208735749" FileType="1048576" CompNumb="29" />
       <File Name="SDK/platform/drivers/src/pins/pins_driver.c" FileDate="2018-10-22, 13:39:30" FileAge="1540208370911" FileType="1048576" CompNumb="9" />
+      <File Name="SDK/platform/drivers/src/edma/edma_hw_access.c" FileDate="2018-10-22, 13:45:35" FileAge="1540208735749" FileType="1048576" CompNumb="29" />
       <File Name="SDK/platform/drivers/src/lptmr/lptmr_hw_access.c" FileDate="2018-10-22, 13:45:35" FileAge="1540208735717" FileType="1048576" CompNumb="14" />
       <File Name="SDK/platform/drivers/inc/lpit_driver.h" FileDate="2018-10-22, 13:45:35" FileAge="1540208735733" FileType="1048576" CompNumb="15" />
       <File Name="SDK/platform/drivers/inc/lptmr_driver.h" FileDate="2018-10-22, 13:45:35" FileAge="1540208735717" FileType="1048576" CompNumb="14" />
       <File Name="Generated_Code/lpit0.h" FileDate="2018-11-14, 14:20:10" FileAge="1542201610981" FileType="45637" CompNumb="15" />
     </GeneratedByPE>
   </GeneratedFilesList>
-  <CodeGenReference>60</CodeGenReference>
+  <CodeGenReference>61</CodeGenReference>
 </CodeGenerationInfo>

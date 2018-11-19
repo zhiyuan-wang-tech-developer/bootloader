@@ -62,6 +62,8 @@ const uint8_t DataPacketHeader = 0x55u;
 const uint8_t DataPacketType_PutData = 0x0Bu;
 const uint8_t DataPacketSize = 69u; // 0x45u  The
 
+extern void timer_stop(void);
+
 // Function declaration for internal use
 bool isDownloadTimeout( void );
 bool isRxDataPacketCorrect( DATA_PACKET_t * pDataPacket );
@@ -440,6 +442,23 @@ void PC2UART_receiver_run(void)
 			PC2UART_ReceiverStatus = READY_FOR_DATA_RX;
 			// Turn off LED to indicate the end of the firmware downloading.
 			LED_OFF;
+			/*
+			 * If the timer is still running after the global interrupt is disabled,
+			 * the timer's interrupt flag may be set when time is up.
+			 * Once reset, global interrupt is enabled, the program will immediately
+			 * enter into LPIT0_Ch0_IRQHandler() and send uart data. But, at this time
+			 * the uart module has not yet been initialized, the MCU exception will occur.
+			 */
+			timer_stop();
+			/*
+			 * Must disable any possible interrupt herein!
+			 * For example:
+			 * If 200ms timing interrupt happened,  the LPIT0_Ch0_IRQHandler() will be called. Then,
+			 * the uart sending data will be performed while the uart module has been uninitialized,
+			 * the MCU will be put into exception.
+			 * Therefore, you must disable all possible interrupts here.
+			 */
+			INT_SYS_DisableIRQGlobal();
 
 #ifdef DEBUG_FROM_RAM
 			printf("System Reset...\r\n");
